@@ -5,7 +5,6 @@
   const menuToggle = document.getElementById('menu-toggle');
   const navLinks = document.getElementById('nav-links');
 
-  // Restore theme
   const saved = localStorage.getItem('theme');
   if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     html.setAttribute('data-theme', 'dark');
@@ -40,11 +39,9 @@
   if (menuToggle && navLinks) {
     menuToggle.addEventListener('click', () => {
       navLinks.classList.toggle('open');
-      const expanded = navLinks.classList.contains('open');
-      menuToggle.setAttribute('aria-expanded', expanded);
+      menuToggle.setAttribute('aria-expanded', navLinks.classList.contains('open'));
     });
-
-    navLinks.querySelectorAll('a').forEach((link) => {
+    navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         navLinks.classList.remove('open');
         menuToggle.setAttribute('aria-expanded', 'false');
@@ -61,18 +58,17 @@
   };
 
   function formatDate(dateStr) {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
   function createArticleCard(article) {
     const categoryLabel = categoryMap[article.category] || article.category;
     const imageContent = article.image
       ? `<img src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">`
-      : article.imageAlt || categoryLabel;
+      : (article.imageAlt || categoryLabel);
 
     return `
-      <article class="article-card" data-id="${article.id}">
+      <a href="article.html?id=${encodeURIComponent(article.id)}" class="article-card" data-id="${article.id}" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;">
         <div class="article-image">${imageContent}</div>
         <div class="article-body">
           <span class="article-category">${categoryLabel}</span>
@@ -83,18 +79,18 @@
             <span>By ${article.author}</span>
           </div>
         </div>
-      </article>
+      </a>
     `;
   }
 
   async function loadArticles() {
     try {
       const res = await fetch('data/articles.json?t=' + Date.now());
-      if (!res.ok) throw new Error('Failed to load articles');
+      if (!res.ok) throw new Error('Failed to load');
       const data = await res.json();
       return data.articles || [];
     } catch (err) {
-      console.error('Error loading articles:', err);
+      console.error(err);
       return [];
     }
   }
@@ -102,29 +98,22 @@
   async function renderHomeArticles() {
     const container = document.getElementById('latest-articles');
     if (!container) return;
-
     const articles = await loadArticles();
     const featured = articles.filter(a => a.featured).slice(0, 3);
     const toShow = featured.length ? featured : articles.slice(0, 3);
-
-    container.innerHTML = toShow.map(createArticleCard).join('');
+    container.innerHTML = toShow.map(createArticleCard).join('') || '<p style="color:var(--text-muted)">No articles yet.</p>';
   }
 
   async function renderCategoryArticles(category) {
     const container = document.getElementById('category-articles');
     if (!container) return;
-
     const articles = await loadArticles();
     const filtered = articles
       .filter(a => a.category === category)
       .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    if (filtered.length === 0) {
-      container.innerHTML = '<p style="color: var(--text-muted)">No articles yet in this category.</p>';
-      return;
-    }
-
-    container.innerHTML = filtered.map(createArticleCard).join('');
+    container.innerHTML = filtered.length
+      ? filtered.map(createArticleCard).join('')
+      : '<p style="color:var(--text-muted)">No articles yet in this category.</p>';
   }
 
   async function renderHero() {
@@ -150,10 +139,8 @@
     }
   }
 
-  // Auto-detect page and render
   document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
-
     if (path.endsWith('index.html') || path.endsWith('/') || path === '') {
       renderHero();
       renderHomeArticles();

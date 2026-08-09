@@ -26,9 +26,7 @@ const ARTICLES_PATH = path.join(__dirname, '..', 'data', 'articles.json');
 async function fetchJSON(url, options = {}) {
   const res = await fetch(url, options);
   const text = await res.text();
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}: ${text.substring(0, 400)}`);
-  }
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.substring(0, 400)}`);
   return JSON.parse(text);
 }
 
@@ -38,25 +36,29 @@ function getTopic(category) {
       'international diplomacy development',
       'climate policy or environment news',
       'global technology regulation',
-      'major world summit or agreement'
+      'major world summit or agreement',
+      'geopolitical tension or peace process'
     ],
     sports: [
       'major tournament or match result',
       'athlete record or standout performance',
       'world championship update',
-      'sports underdog or surprising victory'
+      'sports underdog or surprising victory',
+      'transfer news or coaching change'
     ],
     health: [
       'new medical research or study',
       'vaccine or treatment development',
       'public health recommendation',
-      'wellness or lifestyle finding'
+      'wellness or lifestyle finding',
+      'mental health breakthrough'
     ],
     finance: [
       'central bank or interest rate decision',
       'stock market or economic movement',
       'cryptocurrency regulation update',
-      'retirement or personal finance trend'
+      'retirement or personal finance trend',
+      'major company earnings report'
     ]
   };
   const list = topics[category.id];
@@ -64,18 +66,19 @@ function getTopic(category) {
 }
 
 async function generateArticle(category, topic) {
-  const prompt = `You are a professional journalist for the magazine MeridianMatters.
+  const prompt = `You are a senior professional journalist writing for the high-quality online magazine MeridianMatters.
 
-Write a short news article about: ${topic}
+Write a full, well-structured news article about: ${topic}
 Category: ${category.name}
 
-Return ONLY a valid JSON object with these exact keys and nothing else:
-{
-  "title": "catchy headline max 12 words",
-  "summary": "one or two sentences max 35 words",
-  "content": "two short paragraphs, informative and neutral",
-  "author": "realistic journalist name"
-}`;
+Requirements:
+- title: Catchy professional headline (max 14 words)
+- summary: 1-2 sentences (max 45 words) that work as a teaser
+- content: A complete article of 4 to 6 paragraphs. Make it informative, neutral, and professional. Each paragraph should be 2-4 sentences. Total length should feel like a real magazine article (roughly 350-550 words).
+- author: A realistic journalist name (e.g. "A. Rivera", "Dr. L. Chen", "M. Torres")
+
+Return ONLY valid JSON with exactly these keys: title, summary, content, author.
+Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
 
   console.log('  Calling Groq...');
 
@@ -88,11 +91,11 @@ Return ONLY a valid JSON object with these exact keys and nothing else:
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: 'You always reply with pure valid JSON only. No markdown, no explanation.' },
+        { role: 'system', content: 'You are a helpful assistant that only outputs valid JSON. Never use markdown code fences.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.7,
-      max_tokens: 600,
+      temperature: 0.75,
+      max_tokens: 1800,
       response_format: { type: 'json_object' }
     })
   });
@@ -116,13 +119,12 @@ Return ONLY a valid JSON object with these exact keys and nothing else:
 
 async function getImage(query) {
   if (!UNSPLASH_ACCESS_KEY) return { url: '', alt: query };
-
   try {
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=5&orientation=landscape`;
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`;
     const data = await fetchJSON(url, {
       headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` }
     });
-    const photo = (data.results || [])[0];
+    const photo = (data.results || [])[Math.floor(Math.random() * Math.min(3, (data.results || []).length))];
     if (!photo) return { url: '', alt: query };
     return {
       url: photo.urls?.regular || photo.urls?.small || '',
@@ -166,8 +168,9 @@ async function main() {
       const generated = await generateArticle(category, topic);
       console.log(`  Title: ${generated.title}`);
       console.log(`  Author: ${generated.author}`);
+      console.log(`  Content length: ${generated.content.length} chars`);
 
-      const image = await getImage(`${category.name} ${generated.title.split(' ').slice(0, 3).join(' ')}`);
+      const image = await getImage(`${category.name} ${generated.title.split(' ').slice(0, 4).join(' ')}`);
       console.log(`  Image: ${image.url ? 'Yes' : 'No'}`);
 
       newArticles.push({
@@ -181,11 +184,10 @@ async function main() {
         image: image.url,
         imageAlt: image.alt,
         tags: [category.id],
-        featured: Math.random() > 0.5
+        featured: Math.random() > 0.45
       });
 
-      // Small delay between requests
-      await new Promise(r => setTimeout(r, 1200));
+      await new Promise(r => setTimeout(r, 1500));
     } catch (err) {
       console.error(`✗ Failed for ${category.name}: ${err.message}`);
     }
