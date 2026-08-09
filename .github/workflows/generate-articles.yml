@@ -1,0 +1,42 @@
+name: Generate Articles
+
+on:
+  schedule:
+    # Runs twice per day (approximately 08:00 and 20:00 UTC)
+    - cron: '0 8 * * *'
+    - cron: '0 20 * * *'
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate new articles
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+        run: node scripts/generate-articles.js
+
+      - name: Commit and push if there are changes
+        run: |
+          git config user.name "MeridianMatters Bot"
+          git config user.email "bot@meridianmatters.local"
+          git add data/articles.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-publish new articles $(date -u +%Y-%m-%d)"
+            git push
+          fi
