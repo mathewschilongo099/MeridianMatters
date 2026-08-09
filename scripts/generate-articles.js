@@ -15,15 +15,13 @@ if (!GEMINI_API_KEY || !UNSPLASH_ACCESS_KEY) {
 }
 
 const CATEGORIES = [
-  { id: 'news', name: 'Global News', query: 'world news OR international affairs OR geopolitics' },
-  { id: 'sports', name: 'Sports', query: 'sports OR football OR basketball OR tennis OR athletics' },
-  { id: 'health', name: 'Health', query: 'health OR medicine OR medical research OR wellness' },
-  { id: 'finance', name: 'Finance', query: 'finance OR economy OR markets OR stocks OR business' }
+  { id: 'news', name: 'Global News' },
+  { id: 'sports', name: 'Sports' },
+  { id: 'health', name: 'Health' },
+  { id: 'finance', name: 'Finance' }
 ];
 
 const ARTICLES_PATH = path.join(__dirname, '..', 'data', 'articles.json');
-
-// Use a currently available free model
 const GEMINI_MODEL = 'gemini-2.5-flash';
 
 async function fetchJSON(url, options = {}) {
@@ -76,24 +74,19 @@ async function getTrendingTopic(category) {
 }
 
 async function generateArticleWithGemini(category, topic) {
-  const prompt = `You are a professional journalist writing for a high-quality online magazine called MeridianMatters.
+  const prompt = `You are a professional journalist for MeridianMatters magazine.
 
-Write a realistic, professional news-style article about this topic in the ${category.name} category:
-Topic idea: ${topic}
+Write a short professional news article about: ${topic}
+Category: ${category.name}
 
-Requirements:
-- Catchy, professional headline (maximum 12 words)
-- Short summary (1-2 sentences, maximum 40 words)
-- Full article body (3-5 short paragraphs, informative, neutral and professional tone)
-- Author name (invent a realistic journalist name like "A. Rivera" or "Dr. L. Chen")
+STRICT RULES:
+- Headline: max 12 words
+- Summary: max 35 words
+- Content: exactly 2 short paragraphs (total under 120 words)
+- Author: invent a realistic name (e.g. "A. Rivera" or "Dr. L. Chen")
 
-Return ONLY valid JSON in this exact format. Do not wrap it in markdown or add any extra text:
-{
-  "title": "Your headline here",
-  "summary": "Your short summary here",
-  "content": "Full article text here with paragraphs separated by newlines",
-  "author": "Author Name"
-}`;
+Return ONLY this pure JSON object. No markdown, no code fences, no extra text before or after:
+{"title":"...","summary":"...","content":"...","author":"..."}`;
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -105,59 +98,61 @@ Return ONLY valid JSON in this exact format. Do not wrap it in markdown or add a
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
-        temperature: 0.85,
-        maxOutputTokens: 1200
+        temperature: 0.7,
+        maxOutputTokens: 800
       }
     })
   });
 
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
   if (!text) {
-    console.error('  Gemini returned empty response:', JSON.stringify(data).substring(0, 300));
+    console.error('  Empty response from Gemini:', JSON.stringify(data).substring(0, 300));
     throw new Error('Empty response from Gemini');
   }
 
-  // Clean possible markdown code fences
-  let cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+  // Aggressive cleaning
+  text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
 
-  // Sometimes the model adds extra text before/after JSON
-  const jsonStart = cleaned.indexOf('{');
-  const jsonEnd = cleaned.lastIndexOf('}');
-  if (jsonStart !== -1 && jsonEnd !== -1) {
-    cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
+  // Extract the JSON object even if there is extra text
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) {
+    console.error('  No JSON object found. Raw:', text.substring(0, 400));
+    throw new Error('No JSON object found in response');
   }
 
+  const jsonStr = text.substring(start, end + 1);
+
   try {
-    const parsed = JSON.parse(cleaned);
+    const parsed = JSON.parse(jsonStr);
     if (!parsed.title || !parsed.summary || !parsed.content || !parsed.author) {
-      throw new Error('Missing required fields in JSON');
+      throw new Error('Missing required fields');
+    }
+    // Ensure content is not too long
+    if (parsed.content.length > 600) {
+      parsed.content = parsed.content.substring(0, 580) + '...';
     }
     return parsed;
   } catch (e) {
-    console.error('  Failed to parse Gemini JSON. Raw text:', cleaned.substring(0, 400));
+    console.error('  JSON parse failed. Extracted:', jsonStr.substring(0, 400));
     throw new Error('Invalid JSON from Gemini: ' + e.message);
   }
 }
 
 async function getUnsplashImage(query) {
-  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=8&orientation=landscape`;
+  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`;
 
-  console.log(`  Searching Unsplash for: ${query}`);
+  console.log(`  Searching Unsplash...`);
 
   try {
     const data = await fetchJSON(url, {
-      headers: {
-        Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`
-      }
+      headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` }
     });
 
     const results = data.results || [];
-    if (results.length === 0) {
-      console.log('  No Unsplash results found');
-      return { url: '', alt: query };
-    }
+    if (results.length === 0) return { url: '', alt: query };
 
-    const photo = results[Math.floor(Math.random() * Math.min(results.length, 5))];
+    const photo = results[Math.floor(Math.random() * results.length)];
     return {
       url: photo.urls?.regular || photo.urls?.small || '',
       alt: photo.alt_description || query
@@ -180,12 +175,11 @@ function loadArticles() {
 function saveArticles(data) {
   data.lastUpdated = new Date().toISOString();
   fs.writeFileSync(ARTICLES_PATH, JSON.stringify(data, null, 2));
-  console.log('  Saved articles.json');
+  console.log('  Saved articles.json successfully');
 }
 
 function createId(category) {
-  const ts = Date.now().toString(36);
-  return `${category}-${ts}`;
+  return `${category}-${Date.now().toString(36)}`;
 }
 
 async function generateOneArticle(category) {
@@ -198,8 +192,7 @@ async function generateOneArticle(category) {
   console.log(`  Title: ${generated.title}`);
   console.log(`  Author: ${generated.author}`);
 
-  const imageQuery = `${category.name} ${generated.title.split(' ').slice(0, 4).join(' ')}`;
-  const image = await getUnsplashImage(imageQuery);
+  const image = await getUnsplashImage(`${category.name} ${generated.title.split(' ').slice(0, 3).join(' ')}`);
   console.log(`  Image: ${image.url ? 'Found' : 'None'}`);
 
   const today = new Date().toISOString().split('T')[0];
@@ -215,7 +208,7 @@ async function generateOneArticle(category) {
     image: image.url,
     imageAlt: image.alt,
     tags: [category.id],
-    featured: Math.random() > 0.55
+    featured: Math.random() > 0.5
   };
 }
 
@@ -232,8 +225,7 @@ async function main() {
     try {
       const article = await generateOneArticle(category);
       newArticles.push(article);
-      // Be nice to free API rate limits
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 1800));
     } catch (err) {
       console.error(`✗ Failed for ${category.name}:`, err.message);
     }
@@ -244,7 +236,6 @@ async function main() {
     process.exit(0);
   }
 
-  // Newest first, keep last 60 articles
   data.articles = [...newArticles, ...data.articles].slice(0, 60);
   saveArticles(data);
 
