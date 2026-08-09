@@ -1,6 +1,66 @@
 {
-  "lastUpdated": "2026-08-09T14:00:00Z",
+  "lastUpdated": "2026-08-09T12:49:54.964Z",
   "articles": [
+    {
+      "id": "news-mslsv4xy",
+      "category": "news",
+      "title": "Nations Unite For Peace",
+      "summary": "Global leaders meet, new agreements formed",
+      "content": "International diplomacy efforts have been on the rise. Recent gatherings have led to significant breakthroughs in global cooperation, with multiple nations committing to work together on key issues.",
+      "author": "Emily J. Wilson",
+      "date": "2026-08-09",
+      "image": "",
+      "imageAlt": "Global News Nations Unite For",
+      "tags": [
+        "news"
+      ],
+      "featured": true
+    },
+    {
+      "id": "sports-mslsv6o8",
+      "category": "sports",
+      "title": "Underdogs Win Championship",
+      "summary": "Surprising victory in finals",
+      "content": "The Meridian City Hawks won the championship title. They defeated the favored team in a stunning upset, with a final score of 3-2.",
+      "author": "Emily J. Wilson",
+      "date": "2026-08-09",
+      "image": "https://images.unsplash.com/photo-1707683225456-e680efe98a4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDIyODIxfDB8MXxzZWFyY2h8MXx8U3BvcnRzJTIwVW5kZXJkb2dzJTIwV2luJTIwQ2hhbXBpb25zaGlwfGVufDB8MHx8fDE3ODYyNzk3ODl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageAlt": "a dog is running through the water at a dog show",
+      "tags": [
+        "sports"
+      ],
+      "featured": false
+    },
+    {
+      "id": "health-mslsv8d7",
+      "category": "health",
+      "title": "Mindful Eating Reduces Stress",
+      "summary": "New study reveals benefits",
+      "content": "A recent study found that mindful eating can reduce stress and anxiety. This approach to food focuses on slowing down and savoring each bite, allowing the body to fully experience the sensation of eating. \nRegular mindful eating practice can lead to improved digestion and overall well-being, as the body is able to fully process nutrients and respond to hunger and fullness cues more effectively.",
+      "author": "Emily J. Miller",
+      "date": "2026-08-09",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDIyODIxfDB8MXxzZWFyY2h8MXx8SGVhbHRoJTIwTWluZGZ1bCUyMEVhdGluZyUyMFJlZHVjZXN8ZW58MHwwfHx8MTc4NjI3OTc5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageAlt": "poached egg with vegetables and tomatoes on blue plate",
+      "tags": [
+        "health"
+      ],
+      "featured": true
+    },
+    {
+      "id": "finance-mslsva04",
+      "category": "finance",
+      "title": "Rates Held Steady",
+      "summary": "Central bank keeps rates unchanged",
+      "content": "The central bank has decided to hold interest rates steady. This decision aims to balance economic growth and inflation control.",
+      "author": "Emily J. Miller",
+      "date": "2026-08-09",
+      "image": "https://images.unsplash.com/photo-1633158829585-23ba8f7c8caf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMDIyODIxfDB8MXxzZWFyY2h8MXx8RmluYW5jZSUyMFJhdGVzJTIwSGVsZCUyMFN0ZWFkeXxlbnwwfDB8fHwxNzg2Mjc5NzkzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageAlt": "a person stacking coins on top of a table",
+      "tags": [
+        "finance"
+      ],
+      "featured": true
+    },
     {
       "id": "fin-001",
       "category": "finance",
@@ -11,7 +71,11 @@
       "date": "2026-08-09",
       "image": "",
       "imageAlt": "Finance",
-      "tags": ["markets", "central-banks", "economy"],
+      "tags": [
+        "markets",
+        "central-banks",
+        "economy"
+      ],
       "featured": true
     },
     {
@@ -24,7 +88,11 @@
       "date": "2026-08-08",
       "image": "",
       "imageAlt": "News",
-      "tags": ["climate", "un", "emissions"],
+      "tags": [
+        "climate",
+        "un",
+        "emissions"
+      ],
       "featured": true
     },
     {
@@ -37,7 +105,11 @@
       "date": "2026-08-08",
       "image": "",
       "imageAlt": "Sports",
-      "tags": ["football", "final", "upset"],
+      "tags": [
+        "football",
+        "final",
+        "upset"
+      ],
       "featured": true
     },
     {
@@ -50,7 +122,11 @@
       "date": "2026-08-07",
       "image": "",
       "imageAlt": "Health",
-      "tags": ["vaccine", "mrna", "flu"],
+      "tags": [
+        "vaccine",
+        "mrna",
+        "flu"
+      ],
       "featured": true
     },
     {
@@ -63,7 +139,11 @@
       "date": "2026-08-07",
       "image": "",
       "imageAlt": "News",
-      "tags": ["peace", "diplomacy", "europe"],
+      "tags": [
+        "peace",
+        "diplomacy",
+        "europe"
+      ],
       "featured": false
     },
     {
@@ -76,7 +156,11 @@
       "date": "2026-08-07",
       "image": "",
       "imageAlt": "Sports",
-      "tags": ["athlete", "injury", "return"],
+      "tags": [
+        "athlete",
+        "injury",
+        "return"
+      ],
       "featured": false
     },
     {
@@ -89,7 +173,11 @@
       "date": "2026-08-06",
       "image": "",
       "imageAlt": "Health",
-      "tags": ["walking", "longevity", "exercise"],
+      "tags": [
+        "walking",
+        "longevity",
+        "exercise"
+      ],
       "featured": false
     },
     {
@@ -102,7 +190,11 @@
       "date": "2026-08-07",
       "image": "",
       "imageAlt": "Finance",
-      "tags": ["crypto", "regulation", "policy"],
+      "tags": [
+        "crypto",
+        "regulation",
+        "policy"
+      ],
       "featured": false
     },
     {
@@ -115,7 +207,11 @@
       "date": "2026-08-06",
       "image": "",
       "imageAlt": "News",
-      "tags": ["tech", "privacy", "data"],
+      "tags": [
+        "tech",
+        "privacy",
+        "data"
+      ],
       "featured": false
     },
     {
@@ -128,7 +224,10 @@
       "date": "2026-08-05",
       "image": "",
       "imageAlt": "Sports",
-      "tags": ["olympics", "host-city"],
+      "tags": [
+        "olympics",
+        "host-city"
+      ],
       "featured": false
     },
     {
@@ -141,7 +240,11 @@
       "date": "2026-08-04",
       "image": "",
       "imageAlt": "Health",
-      "tags": ["mental-health", "apps", "therapy"],
+      "tags": [
+        "mental-health",
+        "apps",
+        "therapy"
+      ],
       "featured": false
     },
     {
@@ -154,7 +257,11 @@
       "date": "2026-08-05",
       "image": "",
       "imageAlt": "Finance",
-      "tags": ["retirement", "savings", "investing"],
+      "tags": [
+        "retirement",
+        "savings",
+        "investing"
+      ],
       "featured": false
     }
   ]
