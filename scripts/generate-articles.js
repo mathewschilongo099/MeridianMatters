@@ -1,6 +1,7 @@
 /**
  * MeridianMatters - Automated Article Generator
  * Free stack: Groq + Unsplash + GitHub Actions
+ * Articles must be minimum 1000 words
  */
 
 const fs = require('fs');
@@ -65,22 +66,28 @@ function getTopic(category) {
   return list[Math.floor(Math.random() * list.length)];
 }
 
+function countWords(text) {
+  return (text || '').trim().split(/\s+/).filter(Boolean).length;
+}
+
 async function generateArticle(category, topic) {
   const prompt = `You are a senior professional journalist writing for the high-quality online magazine MeridianMatters.
 
-Write a full, well-structured news article about: ${topic}
+Write a full, in-depth news article about: ${topic}
 Category: ${category.name}
 
-Requirements:
-- title: Catchy professional headline (max 14 words)
-- summary: 1-2 sentences (max 45 words) that work as a teaser
-- content: A complete article of 4 to 6 paragraphs. Make it informative, neutral, and professional. Each paragraph should be 2-4 sentences. Total length should feel like a real magazine article (roughly 350-550 words).
-- author: A realistic journalist name (e.g. "A. Rivera", "Dr. L. Chen", "M. Torres")
+STRICT REQUIREMENTS:
+- title: Catchy professional headline (maximum 14 words)
+- summary: 1-2 sentences (maximum 45 words) that work as a teaser
+- content: A complete long-form article of AT LEAST 1000 words. Write 8 to 12 well-developed paragraphs. Make it informative, neutral, professional, and detailed. Include context, implications, expert-style analysis, and background. Do not write short paragraphs.
+- author: A realistic journalist name (example: "A. Rivera", "Dr. L. Chen", "M. Torres")
+
+The content field must contain at least 1000 words. This is mandatory.
 
 Return ONLY valid JSON with exactly these keys: title, summary, content, author.
 Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
 
-  console.log('  Calling Groq...');
+  console.log('  Calling Groq (long article mode)...');
 
   const data = await fetchJSON('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -91,11 +98,11 @@ Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: 'You are a helpful assistant that only outputs valid JSON. Never use markdown code fences.' },
+        { role: 'system', content: 'You are a professional journalist. You only output valid JSON. Never use markdown code fences. Always write long, detailed articles when requested.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.75,
-      max_tokens: 1800,
+      temperature: 0.7,
+      max_tokens: 4500,
       response_format: { type: 'json_object' }
     })
   });
@@ -114,6 +121,13 @@ Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
     throw new Error('Missing required fields');
   }
 
+  const wordCount = countWords(parsed.content);
+  console.log(`  Word count: ${wordCount}`);
+
+  if (wordCount < 800) {
+    console.warn('  Warning: Article is shorter than requested (target 1000+ words)');
+  }
+
   return parsed;
 }
 
@@ -124,8 +138,9 @@ async function getImage(query) {
     const data = await fetchJSON(url, {
       headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` }
     });
-    const photo = (data.results || [])[Math.floor(Math.random() * Math.min(3, (data.results || []).length))];
-    if (!photo) return { url: '', alt: query };
+    const results = data.results || [];
+    if (results.length === 0) return { url: '', alt: query };
+    const photo = results[Math.floor(Math.random() * Math.min(4, results.length))];
     return {
       url: photo.urls?.regular || photo.urls?.small || '',
       alt: photo.alt_description || query
@@ -152,7 +167,8 @@ function saveArticles(data) {
 
 async function main() {
   console.log('========================================');
-  console.log('MeridianMatters Article Generator (Groq)');
+  console.log('MeridianMatters Article Generator');
+  console.log('Mode: Long-form (target 1000+ words)');
   console.log('Time:', new Date().toISOString());
   console.log('========================================');
 
@@ -168,7 +184,6 @@ async function main() {
       const generated = await generateArticle(category, topic);
       console.log(`  Title: ${generated.title}`);
       console.log(`  Author: ${generated.author}`);
-      console.log(`  Content length: ${generated.content.length} chars`);
 
       const image = await getImage(`${category.name} ${generated.title.split(' ').slice(0, 4).join(' ')}`);
       console.log(`  Image: ${image.url ? 'Yes' : 'No'}`);
@@ -187,7 +202,8 @@ async function main() {
         featured: Math.random() > 0.45
       });
 
-      await new Promise(r => setTimeout(r, 1500));
+      // Longer delay because we are generating big articles
+      await new Promise(r => setTimeout(r, 2500));
     } catch (err) {
       console.error(`✗ Failed for ${category.name}: ${err.message}`);
     }
@@ -198,7 +214,7 @@ async function main() {
     return;
   }
 
-  data.articles = [...newArticles, ...data.articles].slice(0, 60);
+  data.articles = [...newArticles, ...data.articles].slice(0, 50);
   saveArticles(data);
 
   console.log('\n========================================');
