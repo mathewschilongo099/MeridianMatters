@@ -5,16 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MeridianMatters – Global News, Sports, Health & Finance</title>
   <meta name="description" content="Stay informed with the latest in global news, sports, health, and finance. Powered by MeridianMatters.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
   <header class="site-header">
     <div class="container nav-inner">
       <a href="index.html" class="logo">Meridian<span>Matters</span></a>
-
       <nav class="nav-links" id="nav-links" aria-label="Main navigation">
         <a href="index.html" class="active">Home</a>
         <a href="news.html">Global News</a>
@@ -22,7 +18,6 @@
         <a href="health.html">Health</a>
         <a href="finance.html">Finance</a>
       </nav>
-
       <div class="nav-actions">
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode"></button>
         <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
@@ -33,62 +28,27 @@
       </div>
     </div>
   </header>
+  <div class="wire-ticker" id="wire-ticker"></div>
 
   <main>
-    <!-- Hero / Breaking -->
+    <!-- Lead story: shows first, wire-style, no big gradient hero -->
     <section class="hero">
       <div class="container hero-content">
         <span class="hero-badge">Breaking</span>
-        <h1 id="hero-title">Loading latest story...</h1>
-        <p id="hero-summary">Please wait while we load the latest updates.</p>
-        <div class="hero-meta" id="hero-meta">
-          <span>—</span>
-        </div>
+        <h1 id="hero-title">Loading latest story…</h1>
+        <p id="hero-summary"></p>
+        <div class="hero-meta" id="hero-meta"></div>
       </div>
     </section>
 
     <div class="container">
-      <!-- Category Cards -->
-      <div class="section-header">
-        <h2>Explore Topics</h2>
-      </div>
-
-      <div class="category-grid">
-        <a href="news.html" class="category-card">
-          <div class="category-icon">🌍</div>
-          <h3>Global News</h3>
-          <p>International affairs, diplomacy, and the stories shaping our world.</p>
-          <span class="link">Read news →</span>
-        </a>
-        <a href="sports.html" class="category-card">
-          <div class="category-icon">⚽</div>
-          <h3>Sports</h3>
-          <p>Scores, analysis, and highlights from football, basketball, tennis and more.</p>
-          <span class="link">View sports →</span>
-        </a>
-        <a href="health.html" class="category-card">
-          <div class="category-icon">❤️</div>
-          <h3>Health</h3>
-          <p>Medical breakthroughs, wellness tips, and public health updates.</p>
-          <span class="link">Explore health →</span>
-        </a>
-        <a href="finance.html" class="category-card">
-          <div class="category-icon">📈</div>
-          <h3>Finance</h3>
-          <p>Markets, personal finance, and economic trends you need to know.</p>
-          <span class="link">See finance →</span>
-        </a>
-      </div>
-
-      <!-- Featured Articles Preview -->
+      <!-- Latest Stories: dense wire-feed list, right below the lead story -->
       <div class="section-header">
         <h2>Latest Stories</h2>
-        <a href="news.html">View all</a>
+        <a href="news.html">View all →</a>
       </div>
-
       <div class="article-grid" id="latest-articles">
-        <!-- Articles loaded dynamically -->
-        <p style="color: var(--text-muted)">Loading articles...</p>
+        <p style="color: var(--text-muted); padding: 1rem 0;">Loading articles…</p>
       </div>
     </div>
   </main>
@@ -116,9 +76,7 @@
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        © 2026 MeridianMatters. All rights reserved.
-      </div>
+      <div class="footer-bottom">© 2026 MeridianMatters. All rights reserved.</div>
     </div>
   </footer>
 
