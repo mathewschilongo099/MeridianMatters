@@ -1,4 +1,4 @@
-// Theme toggle + mobile menu + dynamic articles
+// Theme toggle + mobile menu + dynamic articles + wire ticker
 (function () {
   const html = document.documentElement;
   const themeToggle = document.getElementById('theme-toggle');
@@ -61,6 +61,13 @@
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
+  // Wire-style timestamp, e.g. "14:32 UTC"
+  function formatWireTime(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }) + ' UTC';
+  }
+
   function createArticleCard(article) {
     const categoryLabel = categoryMap[article.category] || article.category;
     const imageContent = article.image
@@ -68,7 +75,7 @@
       : (article.imageAlt || categoryLabel);
 
     return `
-      <a href="article.html?id=${encodeURIComponent(article.id)}" class="article-card" data-id="${article.id}" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;">
+      <a href="article.html?id=${encodeURIComponent(article.id)}" class="article-card" data-id="${article.id}">
         <div class="article-image">${imageContent}</div>
         <div class="article-body">
           <span class="article-category">${categoryLabel}</span>
@@ -76,6 +83,7 @@
           <p>${article.summary}</p>
           <div class="article-meta">
             <span>${formatDate(article.date)}</span>
+            <span>·</span>
             <span>By ${article.author}</span>
           </div>
         </div>
@@ -99,9 +107,18 @@
     const container = document.getElementById('latest-articles');
     if (!container) return;
     const articles = await loadArticles();
-    const featured = articles.filter(a => a.featured).slice(0, 3);
-    const toShow = featured.length ? featured : articles.slice(0, 3);
-    container.innerHTML = toShow.map(createArticleCard).join('') || '<p style="color:var(--text-muted)">No articles yet.</p>';
+
+    // The lead story already appears in the hero above — skip it here so
+    // it isn't repeated, then show a denser list since each row is compact.
+    const lead = articles.find(a => a.featured) || articles[0];
+    const rest = articles
+      .filter(a => a !== lead)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 8);
+
+    container.innerHTML = rest.length
+      ? rest.map(createArticleCard).join('')
+      : '<p style="color:var(--text-muted);padding:1rem 0;">No articles yet.</p>';
   }
 
   async function renderCategoryArticles(category) {
@@ -113,7 +130,7 @@
       .sort((a, b) => new Date(b.date) - new Date(a.date));
     container.innerHTML = filtered.length
       ? filtered.map(createArticleCard).join('')
-      : '<p style="color:var(--text-muted)">No articles yet in this category.</p>';
+      : '<p style="color:var(--text-muted);padding:1rem 0;">No articles yet in this category.</p>';
   }
 
   async function renderHero() {
@@ -131,15 +148,47 @@
     if (heroMeta) {
       heroMeta.innerHTML = `
         <span>${formatDate(featured.date)}</span>
-        <span>•</span>
+        <span>·</span>
         <span>By ${featured.author}</span>
-        <span>•</span>
+        <span>·</span>
         <span>${categoryMap[featured.category] || featured.category}</span>
       `;
     }
   }
 
+  // ===== Wire Ticker (signature element) =====
+  // Expects a container: <div class="wire-ticker" id="wire-ticker"></div>
+  // placed right after the <header>. Builds itself from the same
+  // articles.json the rest of the page uses — no extra data source needed.
+  async function renderTicker() {
+    const el = document.getElementById('wire-ticker');
+    if (!el) return;
+
+    const articles = await loadArticles();
+    if (!articles.length) return;
+
+    const latest = [...articles]
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 8);
+
+    const items = latest.map(a => {
+      const label = (categoryMap[a.category] || a.category).toUpperCase();
+      return `<a href="article.html?id=${encodeURIComponent(a.id)}">${label} — ${a.title}</a>`;
+    });
+
+    // Duplicate the list back-to-back so the CSS marquee (-50% translateX)
+    // loops seamlessly with no visible seam or restart jump.
+    const track = items.concat(items).join('<span class="sep">&nbsp;&nbsp;//&nbsp;&nbsp;</span>');
+
+    el.innerHTML = `
+      <span class="ticker-label"><span class="dot"></span><span class="txt">Live Wire</span></span>
+      <span class="ticker-track">${track}</span>
+    `;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    renderTicker();
+
     const path = window.location.pathname;
     if (path.endsWith('index.html') || path.endsWith('/') || path === '') {
       renderHero();
