@@ -7,19 +7,36 @@
   <meta name="description" content="Read the full article on MeridianMatters.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
-    .article-page { max-width: 760px; margin: 0 auto; padding: 2rem 0 4rem; }
-    .article-page .back-link { display: inline-block; margin-bottom: 1.5rem; color: var(--accent); font-weight: 600; }
-    .article-page .back-link:hover { text-decoration: underline; }
-    .article-page .category-tag { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); margin-bottom: 0.75rem; }
-    .article-page h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 1rem; }
-    .article-page .meta { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.75rem; display: flex; flex-wrap: wrap; gap: 0.6rem; }
-    .article-page .hero-image { width: 100%; border-radius: 12px; margin-bottom: 2rem; aspect-ratio: 16/9; object-fit: cover; background: var(--border); }
-    .article-page .content { font-size: 1.1rem; line-height: 1.75; color: var(--text); }
+    .article-page { max-width: 720px; margin: 0 auto; padding: 2.25rem 0 4rem; }
+    .article-page .back-link {
+      display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 1.5rem;
+      font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--accent); font-weight: 600;
+    }
+    .article-page .back-link:hover { color: var(--accent-hover); }
+    .article-page .category-tag {
+      font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 0.75rem;
+    }
+    .article-page h1 {
+      font-family: var(--font-display); font-size: clamp(1.7rem, 4.2vw, 2.5rem);
+      font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; margin-bottom: 1rem;
+    }
+    .article-page .meta {
+      font-family: var(--font-mono); color: var(--text-muted); font-size: 0.82rem;
+      text-transform: uppercase; letter-spacing: 0.02em;
+      margin-bottom: 1.75rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--rule);
+      display: flex; flex-wrap: wrap; gap: 0.6rem;
+    }
+    .article-page .hero-image {
+      width: 100%; border-radius: 0; margin-bottom: 2rem; aspect-ratio: 16/9;
+      object-fit: cover; background: var(--bg-alt);
+    }
+    .article-page .content { font-size: 1.08rem; line-height: 1.75; color: var(--text); font-family: var(--font-body); }
     .article-page .content p { margin-bottom: 1.25rem; }
-    .article-page .loading, .article-page .error { color: var(--text-muted); padding: 3rem 0; text-align: center; }
+    .article-page .loading, .article-page .error { color: var(--text-muted); padding: 3rem 0; text-align: center; font-family: var(--font-mono); font-size: 0.85rem; }
   </style>
 </head>
 <body>
@@ -43,6 +60,7 @@
       </div>
     </div>
   </header>
+  <div class="wire-ticker" id="wire-ticker"></div>
 
   <main>
     <div class="container">
@@ -101,7 +119,6 @@
         const categoryLabel = categoryMap[article.category] || article.category;
         const dateStr = new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-        // Split content into paragraphs
         let bodyHtml = '';
         if (article.content) {
           const paragraphs = article.content.split(/\n+/).filter(p => p.trim());
@@ -114,7 +131,7 @@
           <h1>${article.title}</h1>
           <div class="meta">
             <span>${dateStr}</span>
-            <span>•</span>
+            <span>·</span>
             <span>By ${article.author}</span>
           </div>
           ${article.image ? `<img class="hero-image" src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">` : ''}
