@@ -1,23 +1,6 @@
 {
   "articles": [
     {
-      "id": "news-001",
-      "category": "news",
-      "title": "UN Climate Summit Reaches Landmark Agreement on Emissions",
-      "summary": "Delegates from 190 countries approve a new framework targeting net-zero pathways by 2045, with stronger accountability measures for major emitters.",
-      "content": "Delegates from 190 countries approve a new framework targeting net-zero pathways by 2045, with stronger accountability measures for major emitters. The agreement includes new reporting standards and financial support mechanisms for developing nations.",
-      "author": "S. Okonkwo",
-      "date": "2026-08-08",
-      "image": "",
-      "imageAlt": "News",
-      "tags": [
-        "climate",
-        "un",
-        "emissions"
-      ],
-      "featured": true
-    },
-    {
       "id": "sports-001",
       "category": "sports",
       "title": "Underdogs Stun Champions in Dramatic Final",
@@ -50,23 +33,6 @@
         "flu"
       ],
       "featured": true
-    },
-    {
-      "id": "news-002",
-      "category": "news",
-      "title": "Historic Peace Talks Open in Eastern Europe",
-      "summary": "Regional leaders meet under international mediation in a renewed push to end years of conflict and rebuild trust between neighboring states.",
-      "content": "Regional leaders meet under international mediation in a renewed push to end years of conflict and rebuild trust between neighboring states. Observers describe the talks as the most promising development in the region in over a decade.",
-      "author": "J. Petrov",
-      "date": "2026-08-07",
-      "image": "",
-      "imageAlt": "News",
-      "tags": [
-        "peace",
-        "diplomacy",
-        "europe"
-      ],
-      "featured": false
     },
     {
       "id": "sports-002",
