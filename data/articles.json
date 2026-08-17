@@ -1,23 +1,6 @@
 {
   "articles": [
     {
-      "id": "fin-001",
-      "category": "finance",
-      "title": "Global Markets Rally as Central Banks Signal Rate Stability",
-      "summary": "Major indices climb while commodity prices ease, offering relief to consumers and businesses worldwide after months of uncertainty.",
-      "content": "Major indices climb while commodity prices ease, offering relief to consumers and businesses worldwide after months of uncertainty. Analysts note that clearer communication from central banks has reduced market volatility and improved investor confidence across both developed and emerging markets.",
-      "author": "A. Rivera",
-      "date": "2026-08-09",
-      "image": "",
-      "imageAlt": "Finance",
-      "tags": [
-        "markets",
-        "central-banks",
-        "economy"
-      ],
-      "featured": true
-    },
-    {
       "id": "news-001",
       "category": "news",
       "title": "UN Climate Summit Reaches Landmark Agreement on Emissions",
