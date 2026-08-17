@@ -1,23 +1,6 @@
 {
   "articles": [
     {
-      "id": "health-001",
-      "category": "health",
-      "title": "New mRNA Vaccine Shows Strong Results Against Seasonal Flu",
-      "summary": "Phase 3 trial data indicate significantly higher efficacy than traditional shots, with promising protection across age groups.",
-      "content": "Phase 3 trial data indicate significantly higher efficacy than traditional shots, with promising protection across age groups. Researchers say the new approach could reshape annual flu vaccination strategies in the coming years.",
-      "author": "Dr. L. Chen",
-      "date": "2026-08-07",
-      "image": "",
-      "imageAlt": "Health",
-      "tags": [
-        "vaccine",
-        "mrna",
-        "flu"
-      ],
-      "featured": true
-    },
-    {
       "id": "health-002",
       "category": "health",
       "title": "Study Links Daily Walking to Longer Lifespan",
@@ -81,23 +64,6 @@
         "mental-health",
         "apps",
         "therapy"
-      ],
-      "featured": false
-    },
-    {
-      "id": "finance-003",
-      "category": "finance",
-      "title": "Retirement Accounts See Record Inflows in Q2",
-      "summary": "Workers contributed at the highest rate in a decade, driven by improved market confidence and automated savings tools.",
-      "content": "Workers contributed at the highest rate in a decade, driven by improved market confidence and automated savings tools. Financial advisors note a growing trend toward long-term investment discipline.",
-      "author": "N. Garcia",
-      "date": "2026-08-05",
-      "image": "",
-      "imageAlt": "Finance",
-      "tags": [
-        "retirement",
-        "savings",
-        "investing"
       ],
       "featured": false
     }
