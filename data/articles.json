@@ -1,23 +1,6 @@
 {
   "articles": [
     {
-      "id": "sports-001",
-      "category": "sports",
-      "title": "Underdogs Stun Champions in Dramatic Final",
-      "summary": "A last-minute goal seals one of the biggest upsets in recent tournament history, sending fans into celebration.",
-      "content": "A last-minute goal seals one of the biggest upsets in recent tournament history, sending fans into celebration. The victory marks a historic moment for the underdog team and has sparked widespread discussion across the sports world.",
-      "author": "M. Torres",
-      "date": "2026-08-08",
-      "image": "",
-      "imageAlt": "Sports",
-      "tags": [
-        "football",
-        "final",
-        "upset"
-      ],
-      "featured": true
-    },
-    {
       "id": "health-001",
       "category": "health",
       "title": "New mRNA Vaccine Shows Strong Results Against Seasonal Flu",
