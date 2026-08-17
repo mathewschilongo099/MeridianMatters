@@ -1,0 +1,36 @@
+{
+  "categories": [
+    {
+      "id": "news",
+      "name": "Global News",
+      "description": "International affairs, diplomacy, and the stories shaping our world.",
+      "image": "",
+      "order": 1,
+      "subcategories": []
+    },
+    {
+      "id": "sports",
+      "name": "Sports",
+      "description": "Scores, analysis, and highlights from around the world of sport.",
+      "image": "",
+      "order": 2,
+      "subcategories": []
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "description": "Medical breakthroughs, wellness advice, and public health developments.",
+      "image": "",
+      "order": 3,
+      "subcategories": []
+    },
+    {
+      "id": "finance",
+      "name": "Finance",
+      "description": "Markets, economic trends, and practical personal finance insights.",
+      "image": "",
+      "order": 4,
+      "subcategories": []
+    }
+  ]
+}
