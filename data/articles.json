@@ -35,23 +35,6 @@
       "featured": true
     },
     {
-      "id": "sports-002",
-      "category": "sports",
-      "title": "Star Athlete Returns After Injury-Free Season",
-      "summary": "After months of rehabilitation, the league MVP confirms full fitness ahead of the upcoming campaign.",
-      "content": "After months of rehabilitation, the league MVP confirms full fitness ahead of the upcoming campaign. Coaches and teammates have expressed optimism about the athlete's readiness for a strong return.",
-      "author": "K. Williams",
-      "date": "2026-08-07",
-      "image": "",
-      "imageAlt": "Sports",
-      "tags": [
-        "athlete",
-        "injury",
-        "return"
-      ],
-      "featured": false
-    },
-    {
       "id": "health-002",
       "category": "health",
       "title": "Study Links Daily Walking to Longer Lifespan",
@@ -82,23 +65,6 @@
         "crypto",
         "regulation",
         "policy"
-      ],
-      "featured": false
-    },
-    {
-      "id": "news-003",
-      "category": "news",
-      "title": "Tech Giants Face New Cross-Border Data Rules",
-      "summary": "A coalition of nations unveils stricter regulations on data transfers, aiming to protect privacy while preserving digital trade.",
-      "content": "A coalition of nations unveils stricter regulations on data transfers, aiming to protect privacy while preserving digital trade. Companies are already preparing compliance strategies ahead of the new rules taking effect.",
-      "author": "R. Patel",
-      "date": "2026-08-06",
-      "image": "",
-      "imageAlt": "News",
-      "tags": [
-        "tech",
-        "privacy",
-        "data"
       ],
       "featured": false
     },
