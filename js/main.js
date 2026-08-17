@@ -96,10 +96,63 @@
       const res = await fetch('data/articles.json?t=' + Date.now());
       if (!res.ok) throw new Error('Failed to load');
       const data = await res.json();
-      return data.articles || [];
+      const all = data.articles || [];
+
+      // Visibility rule: legacy articles with no "status" field are treated
+      // as published (so nothing already live disappears). Draft/review
+      // never show publicly. Scheduled articles become visible automatically
+      // once their scheduledDate has passed, without needing a new commit.
+      const now = new Date();
+      return all.filter(a => {
+        const status = a.status || 'published';
+        if (status === 'published') return true;
+        if (status === 'scheduled') {
+          const when = a.scheduledDate ? new Date(a.scheduledDate) : null;
+          return when && when <= now;
+        }
+        return false; // draft, review
+      });
     } catch (err) {
       console.error(err);
       return [];
+    }
+  }
+
+  async function loadSettings() {
+    try {
+      const res = await fetch('data/settings.json?t=' + Date.now());
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  async function applySettings() {
+    const settings = await loadSettings();
+    if (!settings) return;
+
+    if (settings.accentColor) {
+      document.documentElement.style.setProperty('--accent', settings.accentColor);
+    }
+    if (settings.siteName && settings.siteName !== 'MeridianMatters') {
+      document.querySelectorAll('.logo').forEach(el => {
+        // Keep the two-tone styling but swap the text content safely.
+        const mid = Math.ceil(settings.siteName.length / 2);
+        el.innerHTML = `${settings.siteName.slice(0, mid)}<span>${settings.siteName.slice(mid)}</span>`;
+      });
+    }
+
+    if (settings.maintenanceMode && !window.location.pathname.includes('admin')) {
+      document.body.innerHTML = `
+        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:2rem; font-family: var(--font-body, sans-serif);">
+          <div>
+            <h1 style="font-family: var(--font-display, sans-serif); font-size:1.8rem; margin-bottom:1rem;">We'll be right back</h1>
+            <p style="color:#5b6470;">${settings.maintenanceMessage || 'The site is temporarily down for maintenance.'}</p>
+          </div>
+        </div>
+      `;
+      throw new Error('maintenance-mode'); // halt further rendering on this page
     }
   }
 
@@ -186,7 +239,13 @@
     `;
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      await applySettings();
+    } catch (err) {
+      if (err.message === 'maintenance-mode') return; // page replaced, stop here
+    }
+
     renderTicker();
 
     const path = window.location.pathname;
