@@ -16,23 +16,6 @@
         "policy"
       ],
       "featured": false
-    },
-    {
-      "id": "health-003",
-      "category": "health",
-      "title": "Mental Health Apps Gain Clinical Validation",
-      "summary": "Several digital therapy platforms receive formal endorsement after rigorous independent trials demonstrate measurable benefits.",
-      "content": "Several digital therapy platforms receive formal endorsement after rigorous independent trials demonstrate measurable benefits. Experts say this could expand access to mental health support worldwide.",
-      "author": "T. Brooks",
-      "date": "2026-08-04",
-      "image": "",
-      "imageAlt": "Health",
-      "tags": [
-        "mental-health",
-        "apps",
-        "therapy"
-      ],
-      "featured": false
     }
   ]
 }
