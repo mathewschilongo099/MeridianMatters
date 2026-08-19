@@ -35,22 +35,6 @@
       "featured": false
     },
     {
-      "id": "sports-003",
-      "category": "sports",
-      "title": "Olympic Committee Announces New Host City",
-      "summary": "The 2036 Summer Games will take place in a first-time host nation, marking a historic moment for the Olympic movement.",
-      "content": "The 2036 Summer Games will take place in a first-time host nation, marking a historic moment for the Olympic movement. Preparations are expected to begin immediately following the announcement.",
-      "author": "A. Nakamura",
-      "date": "2026-08-05",
-      "image": "",
-      "imageAlt": "Sports",
-      "tags": [
-        "olympics",
-        "host-city"
-      ],
-      "featured": false
-    },
-    {
       "id": "health-003",
       "category": "health",
       "title": "Mental Health Apps Gain Clinical Validation",
