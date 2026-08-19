@@ -190,6 +190,7 @@
     const heroTitle = document.getElementById('hero-title');
     const heroSummary = document.getElementById('hero-summary');
     const heroMeta = document.getElementById('hero-meta');
+    const heroLink = document.getElementById('hero-link');
     if (!heroTitle) return;
 
     const articles = await loadArticles();
@@ -198,6 +199,7 @@
 
     heroTitle.textContent = featured.title;
     if (heroSummary) heroSummary.textContent = featured.summary;
+    if (heroLink) heroLink.href = `article.html?id=${encodeURIComponent(featured.id)}`;
     if (heroMeta) {
       heroMeta.innerHTML = `
         <span>${formatDate(featured.date)}</span>
