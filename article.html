@@ -36,6 +36,13 @@
     }
     .article-page .content { font-size: 1.08rem; line-height: 1.75; color: var(--text); font-family: var(--font-body); }
     .article-page .content p { margin-bottom: 1.25rem; }
+    .article-page .content img {
+      width: 100%; border-radius: 0; margin: 0.5rem 0 0.3rem; aspect-ratio: 16/9; object-fit: cover;
+    }
+    .article-page .content .img-caption {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
+      margin-bottom: 1.75rem; text-transform: uppercase; letter-spacing: 0.03em;
+    }
     .article-page .loading, .article-page .error { color: var(--text-muted); padding: 3rem 0; text-align: center; font-family: var(--font-mono); font-size: 0.85rem; }
 
     .next-article {
@@ -70,6 +77,11 @@
       font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent);
       text-transform: uppercase; letter-spacing: 0.05em;
     }
+    .source-note {
+      font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);
+      border: 1px solid var(--rule); padding: 0.75rem 1rem; margin-bottom: 1.75rem;
+    }
+    .source-note a { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -171,7 +183,39 @@
         let bodyHtml = '';
         if (article.content) {
           const paragraphs = article.content.split(/\n+/).filter(p => p.trim());
-          bodyHtml = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+
+          // Interleave any inline images roughly evenly through the body,
+          // the way a real publication breaks up long text — not just one
+          // image at the top. Skips gracefully if the article has none.
+          const inlineImages = (article.images || []).filter(img => img && img.url);
+          const parts = paragraphs.map(p => `<p>${p.trim()}</p>`);
+
+          if (inlineImages.length && paragraphs.length > 3) {
+            const slot = Math.floor(parts.length / (inlineImages.length + 1));
+            inlineImages.forEach((img, i) => {
+              const insertAt = slot * (i + 1) + i; // account for prior insertions shifting index
+              const imgHtml = `<img src="${img.url}" alt="${img.alt || article.title}" loading="lazy">` +
+                (img.alt ? `<div class="img-caption">${img.alt}</div>` : '');
+              parts.splice(Math.min(insertAt, parts.length), 0, imgHtml);
+            });
+          }
+
+          bodyHtml = parts.join('');
+        }
+
+        // Transparency note: shown only when the article actually has a
+        // real source behind it (older/manually-written articles won't
+        // have these fields, so nothing shows for them).
+        let sourceHtml = '';
+        if (article.sourceName || article.aiAssisted) {
+          const parts = [];
+          if (article.sourceName) {
+            parts.push(article.sourceUrl
+              ? `Reporting based on <a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer">${article.sourceName}</a>`
+              : `Reporting based on ${article.sourceName}`);
+          }
+          if (article.aiAssisted) parts.push('Written with AI assistance');
+          sourceHtml = `<div class="source-note">${parts.join(' · ')}</div>`;
         }
 
         // ---- Related articles: same category (and shared tags if present),
@@ -227,6 +271,7 @@
             <span>By ${article.author}</span>
           </div>
           ${article.image ? `<img class="hero-image" src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">` : ''}
+          ${sourceHtml}
           <div class="content">
             ${bodyHtml || `<p>${article.summary}</p>`}
           </div>
