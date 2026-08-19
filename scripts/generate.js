@@ -2,9 +2,13 @@
  * MeridianMatters - Automated Article Generator
  * Free stack: Groq + Google News RSS (for real grounding) + Unsplash + GitHub Actions
  *
- * Articles are grounded in a REAL current headline pulled from Google News
- * RSS, not a vague made-up "topic" prompt. Word count is enforced with a
- * retry loop, not just logged.
+ * Key change from the previous version: articles are now written based on a
+ * REAL current headline pulled from Google News RSS, not a vague made-up
+ * "topic" prompt. Free-generating from a vague topic gave the model nothing
+ * real to report on, so it invented fake events/quotes/statistics to fill
+ * the word count. Grounding in a real headline fixes that at the source.
+ *
+ * Word count is now actually enforced with a retry loop, not just logged.
  */
 
 const fs = require('fs');
@@ -26,7 +30,7 @@ const CATEGORIES = [
 ];
 
 const MIN_WORDS = 1000;
-const MIN_ACCEPTABLE_WORDS = 700;
+const MIN_ACCEPTABLE_WORDS = 700; // absolute floor if 3 retries can't hit 1000
 const MAX_ATTEMPTS = 3;
 
 const ARTICLES_PATH = path.join(__dirname, '..', 'data', 'articles.json');
@@ -46,6 +50,8 @@ function decodeEntities(str) {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>');
 }
+
+// ---- Real headline retrieval (Google News RSS, no API key required) ----
 
 const RSS_QUERIES = {
   news: ['world news', 'international diplomacy', 'global politics'],
@@ -75,7 +81,7 @@ async function fetchTrendingHeadline(category, excludeUrls) {
     const title = decodeEntities(titleMatch[1]);
     const link = linkMatch ? decodeEntities(linkMatch[1]) : '';
 
-    if (excludeUrls.has(link)) continue;
+    if (excludeUrls.has(link)) continue; // already covered this exact story
 
     return {
       title,
@@ -85,12 +91,14 @@ async function fetchTrendingHeadline(category, excludeUrls) {
     };
   }
 
-  return null;
+  return null; // nothing fresh found
 }
 
 function countWords(text) {
   return (text || '').trim().split(/\s+/).filter(Boolean).length;
 }
+
+// ---- Article generation, grounded in a real headline ----
 
 async function generateArticleOnce(category, headline) {
   const prompt = `You are a professional news writer for MeridianMatters, an online news magazine.
@@ -158,6 +166,9 @@ Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
   return parsed;
 }
 
+// Actually enforces the word-count minimum instead of just logging a
+// warning: retries up to MAX_ATTEMPTS times and keeps the longest result.
+// Only falls back to a shorter article if it clears an absolute floor.
 async function generateArticleWithRetry(category, headline) {
   let best = null;
 
@@ -228,6 +239,7 @@ async function main() {
   const data = loadArticles();
   const newArticles = [];
 
+  // Don't re-cover a story we've already published an article about.
   const usedSourceUrls = new Set(
     (data.articles || []).map(a => a.sourceUrl).filter(Boolean)
   );
@@ -251,6 +263,15 @@ async function main() {
       const image = await getImage(`${category.name} ${generated.title.split(' ').slice(0, 4).join(' ')}`);
       console.log(`  Image: ${image.url ? 'Yes' : 'No'}`);
 
+      // Extra inline images so the article isn't just a single hero image —
+      // spread through the body like a real publication layout. Distinct
+      // query terms (source name, category-only) keep them visually varied
+      // from the hero shot rather than duplicating the same search.
+      const inlineImage1 = await getImage(`${headline.source} ${category.name}`);
+      const inlineImage2 = await getImage(`${category.name} news`);
+      const images = [inlineImage1, inlineImage2].filter(img => img.url);
+      console.log(`  Inline images: ${images.length}`);
+
       newArticles.push({
         id: `${category.id}-${Date.now().toString(36)}`,
         category: category.id,
@@ -261,6 +282,7 @@ async function main() {
         date: new Date().toISOString().split('T')[0],
         image: image.url,
         imageAlt: image.alt,
+        images,
         tags: [category.id],
         featured: Math.random() > 0.45,
         status: 'published',
@@ -271,6 +293,7 @@ async function main() {
 
       usedSourceUrls.add(headline.link);
 
+      // Longer delay because we are generating big articles and doing retries.
       await new Promise(r => setTimeout(r, 2500));
     } catch (err) {
       console.error(`✗ Failed for ${category.name}: ${err.message}`);
