@@ -73,7 +73,7 @@
       "tags": [
         "finance"
       ],
-      "featured": true,
+      "featured": false,
       "status": "published",
       "sourceName": "cnn.com",
       "sourceUrl": "https://news.google.com/rss/articles/CBMibkFVX3lxTE14TnNrUjZsV1NRN21Jd0pmdnl1TEtDT2FpeWxTbmx6VFlRVTFuNEJJQnJCTm5jaHFIN0RrUEl1OGZDQzFRXy1pUmNVdS1DTGFtU1FRQ1p5eVI2cDRyeUxURUhUTmxQTXZ5RmhPemRn?oc=5",
@@ -92,7 +92,7 @@
       "tags": [
         "news"
       ],
-      "featured": true,
+      "featured": false,
       "status": "published",
       "sourceName": "WSJ",
       "sourceUrl": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOQWg1UEUyVGZjRTV4dlJ1bUJGZDdrN1dGajlyZFVXQmhveWtHTkF4MlM3SHNmUzBNajlBaWxjVVRoYm9LbFdNOFpLdmJQUEpBY0RlWlhlWFRtWTFacUQ4UVJ4UTlrMFVDd1JVNjhaNWhEU3ZLWUFYTmIyd1RMRUdJdHQ1X1pPZ0FGcHhmck91MjBQMnBhWEczb2RvSmU?oc=5",
