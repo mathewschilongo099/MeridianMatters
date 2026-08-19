@@ -77,11 +77,6 @@
       font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent);
       text-transform: uppercase; letter-spacing: 0.05em;
     }
-    .source-note {
-      font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);
-      border: 1px solid var(--rule); padding: 0.75rem 1rem; margin-bottom: 1.75rem;
-    }
-    .source-note a { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -203,21 +198,6 @@
           bodyHtml = parts.join('');
         }
 
-        // Transparency note: shown only when the article actually has a
-        // real source behind it (older/manually-written articles won't
-        // have these fields, so nothing shows for them).
-        let sourceHtml = '';
-        if (article.sourceName || article.aiAssisted) {
-          const parts = [];
-          if (article.sourceName) {
-            parts.push(article.sourceUrl
-              ? `Reporting based on <a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer">${article.sourceName}</a>`
-              : `Reporting based on ${article.sourceName}`);
-          }
-          if (article.aiAssisted) parts.push('Written with AI assistance');
-          sourceHtml = `<div class="source-note">${parts.join(' · ')}</div>`;
-        }
-
         // ---- Related articles: same category (and shared tags if present),
         // most recent first, excluding the current article. ----
         const sameCategory = visible.filter(a => a.id !== article.id && a.category === article.category);
@@ -271,7 +251,6 @@
             <span>By ${article.author}</span>
           </div>
           ${article.image ? `<img class="hero-image" src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">` : ''}
-          ${sourceHtml}
           <div class="content">
             ${bodyHtml || `<p>${article.summary}</p>`}
           </div>
