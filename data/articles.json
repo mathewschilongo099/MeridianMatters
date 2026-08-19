@@ -1,23 +1,6 @@
 {
   "articles": [
     {
-      "id": "health-002",
-      "category": "health",
-      "title": "Study Links Daily Walking to Longer Lifespan",
-      "summary": "Researchers find that just 7,000 steps a day are associated with measurable reductions in cardiovascular risk and mortality.",
-      "content": "Researchers find that just 7,000 steps a day are associated with measurable reductions in cardiovascular risk and mortality. The findings support simple, accessible lifestyle changes for long-term health benefits.",
-      "author": "E. Johansson",
-      "date": "2026-08-06",
-      "image": "",
-      "imageAlt": "Health",
-      "tags": [
-        "walking",
-        "longevity",
-        "exercise"
-      ],
-      "featured": false
-    },
-    {
       "id": "finance-002",
       "category": "finance",
       "title": "Cryptocurrency Regulation Framework Nears Final Vote",
