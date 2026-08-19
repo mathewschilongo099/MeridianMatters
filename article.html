@@ -37,6 +37,39 @@
     .article-page .content { font-size: 1.08rem; line-height: 1.75; color: var(--text); font-family: var(--font-body); }
     .article-page .content p { margin-bottom: 1.25rem; }
     .article-page .loading, .article-page .error { color: var(--text-muted); padding: 3rem 0; text-align: center; font-family: var(--font-mono); font-size: 0.85rem; }
+
+    .next-article {
+      display: block; margin-top: 2.5rem; padding: 1.25rem 1.4rem;
+      border: 1px solid var(--rule-strong); text-decoration: none;
+    }
+    .next-article .label {
+      font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;
+    }
+    .next-article h4 {
+      font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text);
+    }
+    .related-section { margin-top: 2.5rem; border-top: 2px solid var(--rule-strong); padding-top: 1.25rem; }
+    .related-section h3 {
+      font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
+      text-transform: uppercase; margin-bottom: 0.75rem;
+    }
+    .related-list { display: flex; flex-direction: column; }
+    .related-row {
+      display: grid; grid-template-columns: 72px 1fr; gap: 0.9rem;
+      padding: 0.75rem 0; border-bottom: 1px solid var(--rule); text-decoration: none; color: inherit;
+    }
+    .related-row .thumb {
+      width: 72px; height: 56px; background: var(--bg-alt); overflow: hidden;
+    }
+    .related-row .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .related-row h4 {
+      font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; line-height: 1.3;
+    }
+    .related-row .cat {
+      font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body>
@@ -106,7 +139,23 @@
       try {
         const res = await fetch('data/articles.json?t=' + Date.now());
         const data = await res.json();
-        const article = (data.articles || []).find(a => a.id === id);
+        const all = data.articles || [];
+
+        // Only ever surface publicly-visible articles here — same rule as
+        // the rest of the site (missing status = legacy published article,
+        // scheduled articles only count once their date has passed).
+        const now = new Date();
+        const visible = all.filter(a => {
+          const status = a.status || 'published';
+          if (status === 'published') return true;
+          if (status === 'scheduled') {
+            const when = a.scheduledDate ? new Date(a.scheduledDate) : null;
+            return when && when <= now;
+          }
+          return false;
+        });
+
+        const article = visible.find(a => a.id === id);
 
         if (!article) {
           root.innerHTML = '<p class="error">Article not found.</p>';
@@ -125,6 +174,49 @@
           bodyHtml = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
         }
 
+        // ---- Related articles: same category (and shared tags if present),
+        // most recent first, excluding the current article. ----
+        const sameCategory = visible.filter(a => a.id !== article.id && a.category === article.category);
+        const articleTags = article.tags || [];
+        const scored = sameCategory.map(a => {
+          const sharedTags = (a.tags || []).filter(t => articleTags.includes(t)).length;
+          return { a, score: sharedTags };
+        }).sort((x, y) => y.score - x.score || new Date(y.a.date) - new Date(x.a.date));
+        const related = scored.slice(0, 3).map(s => s.a);
+
+        const relatedHtml = related.length ? `
+          <div class="related-section">
+            <h3>Related in ${categoryLabel}</h3>
+            <div class="related-list">
+              ${related.map(r => `
+                <a href="article.html?id=${encodeURIComponent(r.id)}" class="related-row">
+                  <div class="thumb">${r.image ? `<img src="${r.image}" alt="${r.title}" loading="lazy">` : ''}</div>
+                  <div>
+                    <span class="cat">${categoryMap[r.category] || r.category}</span>
+                    <h4>${r.title}</h4>
+                  </div>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        ` : '';
+
+        // ---- Next article: chronologically the next-older story overall,
+        // so readers can keep moving through the whole feed, not just one
+        // category. Wraps to the most recent article at the end of the list. ----
+        const chronological = [...visible].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const curIdx = chronological.findIndex(a => a.id === article.id);
+        const nextArticle = chronological.length > 1
+          ? chronological[(curIdx + 1) % chronological.length]
+          : null;
+
+        const nextHtml = nextArticle ? `
+          <a href="article.html?id=${encodeURIComponent(nextArticle.id)}" class="next-article">
+            <div class="label">Next Article →</div>
+            <h4>${nextArticle.title}</h4>
+          </a>
+        ` : '';
+
         root.innerHTML = `
           <a href="javascript:history.back()" class="back-link">← Back</a>
           <div class="category-tag">${categoryLabel}</div>
@@ -138,6 +230,8 @@
           <div class="content">
             ${bodyHtml || `<p>${article.summary}</p>`}
           </div>
+          ${nextHtml}
+          ${relatedHtml}
         `;
       } catch (err) {
         console.error(err);
