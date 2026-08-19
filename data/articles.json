@@ -13,7 +13,7 @@
       "tags": [
         "news"
       ],
-      "featured": false,
+      "featured": true,
       "status": "published",
       "sourceName": "WSJ",
       "sourceUrl": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOQWg1UEUyVGZjRTV4dlJ1bUJGZDdrN1dGajlyZFVXQmhveWtHTkF4MlM3SHNmUzBNajlBaWxjVVRoYm9LbFdNOFpLdmJQUEpBY0RlWlhlWFRtWTFacUQ4UVJ4UTlrMFVDd1JVNjhaNWhEU3ZLWUFYTmIyd1RMRUdJdHQ1X1pPZ0FGcHhmck91MjBQMnBhWEczb2RvSmU?oc=5",
@@ -38,6 +38,5 @@
       "sourceUrl": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOaDNtOWx4NDRhX0dFRU5GNW5fUVZ0T2FfemxpSjFISjc1N1ZUcldwLTBfemRBZllwSkQxQjdoY3E4SVVHemU5NDBobUlISU1lTS1nY2dQWThjSERpeEwyMkl3T0VhMldkcnh6NGlodk5qQ21tOUxnMmZ1VHBUZ2FfTzNRVURXcGdQREVJdl9HOXhxaWtwbGF3WDhickdnRjZkc0xxdUxIOUhTNF9TT2FUMGJHZ0tTQ0RN?oc=5",
       "aiAssisted": true
     }
-  ],
-  "lastUpdated": "2026-08-19T10:27:46.356Z"
+  ]
 }
