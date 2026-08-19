@@ -1,21 +1,3 @@
 {
-  "articles": [
-    {
-      "id": "finance-002",
-      "category": "finance",
-      "title": "Cryptocurrency Regulation Framework Nears Final Vote",
-      "summary": "Lawmakers prepare a comprehensive bill that aims to bring clearer rules for digital assets without stifling innovation.",
-      "content": "Lawmakers prepare a comprehensive bill that aims to bring clearer rules for digital assets without stifling innovation. Industry leaders have welcomed the move as a step toward greater mainstream adoption.",
-      "author": "D. Kwon",
-      "date": "2026-08-07",
-      "image": "",
-      "imageAlt": "Finance",
-      "tags": [
-        "crypto",
-        "regulation",
-        "policy"
-      ],
-      "featured": false
-    }
-  ]
+  "articles": []
 }
