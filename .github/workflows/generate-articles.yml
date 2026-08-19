@@ -1,0 +1,38 @@
+name: Generate Articles
+
+on:
+  schedule:
+    - cron: '0 6,18 * * *'   # runs twice daily, 06:00 and 18:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run article generator
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+        run: node scripts/generate.js
+
+      - name: Commit and push if articles changed
+        run: |
+          git config user.name "MeridianMatters Bot"
+          git config user.email "actions@github.com"
+          if ! git diff --quiet data/articles.json; then
+            git add data/articles.json
+            git commit -m "Auto-publish new articles $(date +'%Y-%m-%d')"
+            git push
+          else
+            echo "No changes to commit."
+          fi
