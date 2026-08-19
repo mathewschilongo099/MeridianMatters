@@ -138,7 +138,7 @@ Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       messages: [
         { role: 'system', content: 'You are a careful, accuracy-focused professional journalist. You only output valid JSON. Never use markdown code fences. You never invent facts, quotes, or statistics that are not grounded in the source headline given to you. You always write long, detailed articles when requested.' },
         { role: 'user', content: prompt }
