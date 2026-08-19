@@ -3,6 +3,6 @@
   "tagline": "Your trusted source for global news, sports, health, and finance insights.",
   "logoUrl": "",
   "accentColor": "#0ea5e9",
-  "maintenanceMode": false,
+  "maintenanceMode": true,
   "maintenanceMessage": "We're making some updates. Check back shortly."
 }
