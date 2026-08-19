@@ -1,7 +1,14 @@
 /**
  * MeridianMatters - Automated Article Generator
- * Free stack: Groq + Unsplash + GitHub Actions
- * Articles must be minimum 1000 words
+ * Free stack: Groq + Google News RSS (for real grounding) + Unsplash + GitHub Actions
+ *
+ * Key change from the previous version: articles are now written based on a
+ * REAL current headline pulled from Google News RSS, not a vague made-up
+ * "topic" prompt. Free-generating from a vague topic gave the model nothing
+ * real to report on, so it invented fake events/quotes/statistics to fill
+ * the word count. Grounding in a real headline fixes that at the source.
+ *
+ * Word count is now actually enforced with a retry loop, not just logged.
  */
 
 const fs = require('fs');
@@ -22,6 +29,10 @@ const CATEGORIES = [
   { id: 'finance', name: 'Finance' }
 ];
 
+const MIN_WORDS = 1000;
+const MIN_ACCEPTABLE_WORDS = 700; // absolute floor if 3 retries can't hit 1000
+const MAX_ATTEMPTS = 3;
+
 const ARTICLES_PATH = path.join(__dirname, '..', 'data', 'articles.json');
 
 async function fetchJSON(url, options = {}) {
@@ -31,63 +42,94 @@ async function fetchJSON(url, options = {}) {
   return JSON.parse(text);
 }
 
-function getTopic(category) {
-  const topics = {
-    news: [
-      'international diplomacy development',
-      'climate policy or environment news',
-      'global technology regulation',
-      'major world summit or agreement',
-      'geopolitical tension or peace process'
-    ],
-    sports: [
-      'major tournament or match result',
-      'athlete record or standout performance',
-      'world championship update',
-      'sports underdog or surprising victory',
-      'transfer news or coaching change'
-    ],
-    health: [
-      'new medical research or study',
-      'vaccine or treatment development',
-      'public health recommendation',
-      'wellness or lifestyle finding',
-      'mental health breakthrough'
-    ],
-    finance: [
-      'central bank or interest rate decision',
-      'stock market or economic movement',
-      'cryptocurrency regulation update',
-      'retirement or personal finance trend',
-      'major company earnings report'
-    ]
-  };
-  const list = topics[category.id];
-  return list[Math.floor(Math.random() * list.length)];
+function decodeEntities(str) {
+  return (str || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+// ---- Real headline retrieval (Google News RSS, no API key required) ----
+
+const RSS_QUERIES = {
+  news: ['world news', 'international diplomacy', 'global politics'],
+  sports: ['sports news', 'football OR basketball OR tennis', 'sports championship'],
+  health: ['health news', 'medical research', 'public health'],
+  finance: ['finance news', 'stock market', 'economy']
+};
+
+async function fetchTrendingHeadline(category, excludeUrls) {
+  const queries = RSS_QUERIES[category.id];
+  const query = queries[Math.floor(Math.random() * queries.length)];
+  const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+
+  const res = await fetch(feedUrl);
+  const xml = await res.text();
+
+  const itemBlocks = Array.from(xml.matchAll(/<item>([\s\S]*?)<\/item>/g)).map(m => m[1]);
+
+  for (const block of itemBlocks.slice(0, 20)) {
+    const titleMatch = block.match(/<title>(.*?)<\/title>/);
+    const linkMatch = block.match(/<link>(.*?)<\/link>/);
+    const sourceMatch = block.match(/<source[^>]*>(.*?)<\/source>/);
+    const pubDateMatch = block.match(/<pubDate>(.*?)<\/pubDate>/);
+
+    if (!titleMatch) continue;
+
+    const title = decodeEntities(titleMatch[1]);
+    const link = linkMatch ? decodeEntities(linkMatch[1]) : '';
+
+    if (excludeUrls.has(link)) continue; // already covered this exact story
+
+    return {
+      title,
+      link,
+      source: sourceMatch ? decodeEntities(sourceMatch[1]) : 'a news wire service',
+      pubDate: pubDateMatch ? pubDateMatch[1] : ''
+    };
+  }
+
+  return null; // nothing fresh found
 }
 
 function countWords(text) {
   return (text || '').trim().split(/\s+/).filter(Boolean).length;
 }
 
-async function generateArticle(category, topic) {
-  const prompt = `You are a senior professional journalist writing for the high-quality online magazine MeridianMatters.
+// ---- Article generation, grounded in a real headline ----
 
-Write a full, in-depth news article about: ${topic}
-Category: ${category.name}
+async function generateArticleOnce(category, headline) {
+  const prompt = `You are a professional news writer for MeridianMatters, an online news magazine.
 
-STRICT REQUIREMENTS:
-- title: Catchy professional headline (maximum 14 words)
-- summary: 1-2 sentences (maximum 45 words) that work as a teaser
-- content: A complete long-form article of AT LEAST 1000 words. Write 8 to 12 well-developed paragraphs. Make it informative, neutral, professional, and detailed. Include context, implications, expert-style analysis, and background. Do not write short paragraphs.
-- author: A realistic journalist name (example: "A. Rivera", "Dr. L. Chen", "M. Torres")
+You are reporting on this real, currently published news item:
 
-The content field must contain at least 1000 words. This is mandatory.
+Headline: "${headline.title}"
+Source: ${headline.source}
+${headline.pubDate ? `Published: ${headline.pubDate}` : ''}
+
+Write a full news article expanding on this real headline for a ${category.name} readership.
+
+CRITICAL ACCURACY RULES (mandatory):
+- Base the article ONLY on what is reasonably implied by the headline above.
+- Do NOT invent specific statistics, direct quotes, named individuals, or numeric figures that are not present in the headline.
+- When adding context or analysis, frame it clearly as general context or analysis rather than as newly reported fact (e.g. "analysts have generally noted" rather than a fabricated named analyst with an invented quote).
+- Do not fabricate outcomes, figures, or details beyond what is reasonably inferable from the headline.
+- It is better to write in well-hedged, general terms than to invent false specifics. Accuracy matters more than color.
+
+LENGTH REQUIREMENT (mandatory):
+- The "content" field must be AT LEAST ${MIN_WORDS} words. Write 9-13 well-developed paragraphs covering: what happened, why it matters, relevant background, and broader implications.
+- Do not stop early. If you are unsure you have reached ${MIN_WORDS} words, continue writing additional context and analysis paragraphs before finishing.
+
+FORMAT:
+- title: A professional headline (max 14 words), may closely follow the real headline
+- summary: 1-2 sentence teaser (max 45 words)
+- content: the full ${MIN_WORDS}+ word article, paragraphs separated by newlines
+- author: use exactly "MeridianMatters Newsroom" (do not invent a fake individual byline or credentials)
 
 Return ONLY valid JSON with exactly these keys: title, summary, content, author.
 Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
-
-  console.log('  Calling Groq (long article mode)...');
 
   const data = await fetchJSON('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -98,10 +140,10 @@ Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: 'You are a professional journalist. You only output valid JSON. Never use markdown code fences. Always write long, detailed articles when requested.' },
+        { role: 'system', content: 'You are a careful, accuracy-focused professional journalist. You only output valid JSON. Never use markdown code fences. You never invent facts, quotes, or statistics that are not grounded in the source headline given to you. You always write long, detailed articles when requested.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.7,
+      temperature: 0.6,
       max_tokens: 4500,
       response_format: { type: 'json_object' }
     })
@@ -121,14 +163,36 @@ Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
     throw new Error('Missing required fields');
   }
 
-  const wordCount = countWords(parsed.content);
-  console.log(`  Word count: ${wordCount}`);
+  return parsed;
+}
 
-  if (wordCount < 800) {
-    console.warn('  Warning: Article is shorter than requested (target 1000+ words)');
+// Actually enforces the word-count minimum instead of just logging a
+// warning: retries up to MAX_ATTEMPTS times and keeps the longest result.
+// Only falls back to a shorter article if it clears an absolute floor.
+async function generateArticleWithRetry(category, headline) {
+  let best = null;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      console.log(`  Attempt ${attempt}/${MAX_ATTEMPTS}...`);
+      const result = await generateArticleOnce(category, headline);
+      const wc = countWords(result.content);
+      console.log(`  → ${wc} words`);
+
+      if (!best || wc > countWords(best.content)) best = result;
+      if (wc >= MIN_WORDS) return result;
+    } catch (err) {
+      console.warn(`  Attempt ${attempt} failed: ${err.message}`);
+    }
+    await new Promise(r => setTimeout(r, 1200));
   }
 
-  return parsed;
+  if (best && countWords(best.content) >= MIN_ACCEPTABLE_WORDS) {
+    console.warn(`  Using best attempt at ${countWords(best.content)} words (below ${MIN_WORDS} target, but above the ${MIN_ACCEPTABLE_WORDS}-word floor).`);
+    return best;
+  }
+
+  throw new Error(`Could not reach the ${MIN_ACCEPTABLE_WORDS}-word floor after ${MAX_ATTEMPTS} attempts`);
 }
 
 async function getImage(query) {
@@ -168,22 +232,33 @@ function saveArticles(data) {
 async function main() {
   console.log('========================================');
   console.log('MeridianMatters Article Generator');
-  console.log('Mode: Long-form (target 1000+ words)');
+  console.log('Mode: Grounded in real headlines, 1000+ words enforced');
   console.log('Time:', new Date().toISOString());
   console.log('========================================');
 
   const data = loadArticles();
   const newArticles = [];
 
+  // Don't re-cover a story we've already published an article about.
+  const usedSourceUrls = new Set(
+    (data.articles || []).map(a => a.sourceUrl).filter(Boolean)
+  );
+
   for (const category of CATEGORIES) {
     try {
       console.log(`\n→ ${category.name}`);
-      const topic = getTopic(category);
-      console.log(`  Topic: ${topic}`);
 
-      const generated = await generateArticle(category, topic);
+      const headline = await fetchTrendingHeadline(category, usedSourceUrls);
+      if (!headline) {
+        console.log('  No fresh headline found for this category — skipping rather than fabricating one.');
+        continue;
+      }
+      console.log(`  Headline: ${headline.title}`);
+      console.log(`  Source: ${headline.source}`);
+
+      const generated = await generateArticleWithRetry(category, headline);
       console.log(`  Title: ${generated.title}`);
-      console.log(`  Author: ${generated.author}`);
+      console.log(`  Final word count: ${countWords(generated.content)}`);
 
       const image = await getImage(`${category.name} ${generated.title.split(' ').slice(0, 4).join(' ')}`);
       console.log(`  Image: ${image.url ? 'Yes' : 'No'}`);
@@ -199,10 +274,16 @@ async function main() {
         image: image.url,
         imageAlt: image.alt,
         tags: [category.id],
-        featured: Math.random() > 0.45
+        featured: Math.random() > 0.45,
+        status: 'published',
+        sourceName: headline.source,
+        sourceUrl: headline.link,
+        aiAssisted: true
       });
 
-      // Longer delay because we are generating big articles
+      usedSourceUrls.add(headline.link);
+
+      // Longer delay because we are generating big articles and doing retries.
       await new Promise(r => setTimeout(r, 2500));
     } catch (err) {
       console.error(`✗ Failed for ${category.name}: ${err.message}`);
