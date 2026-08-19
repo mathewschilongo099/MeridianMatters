@@ -228,6 +228,8 @@ ul { list-style: none; }
 
 .hero-content { display: grid; gap: 0.85rem; max-width: 760px; }
 
+.hero-content a:hover h1 { text-decoration: underline; text-decoration-color: var(--accent); }
+
 .hero-badge {
   display: inline-flex;
   align-items: center;
