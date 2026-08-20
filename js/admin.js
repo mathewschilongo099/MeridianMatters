@@ -184,14 +184,15 @@
     pages = pagesRes ? (pagesRes.json.pages || []) : [];
     shas.pages = pagesRes ? pagesRes.sha : null;
 
-    if (!categoriesRes) {
-      showMsg('No data/categories.json found in the repo yet — category management will create it on first save.', 'error');
-    }
-    if (!settingsRes) {
-      showMsg('No data/settings.json found in the repo yet — settings will create it on first save.', 'error');
-    }
-    if (!pagesRes) {
-      showMsg('No data/pages.json found in the repo yet — Pages management will create it on first save.', 'error');
+    // Collect all missing-file warnings into one message instead of
+    // overwriting each other — previously only the LAST warning was ever
+    // visible, silently hiding earlier ones.
+    const missing = [];
+    if (!categoriesRes) missing.push('data/categories.json');
+    if (!settingsRes) missing.push('data/settings.json');
+    if (!pagesRes) missing.push('data/pages.json');
+    if (missing.length) {
+      showMsg(`Missing from the repo (will be created on first save in each tab): ${missing.join(', ')}`, 'error');
     }
   }
 
@@ -683,6 +684,7 @@
   // ---- Pages ----
 
   function renderPages() {
+    if (!pageListEl) throw new Error('page-list element not found in the HTML — admin.html may be out of date');
     if (!pages.length) {
       pageListEl.innerHTML = '<p class="empty">No pages yet.</p>';
       return;
@@ -816,6 +818,18 @@
 
   // ---- Auth flow ----
 
+  // Runs a render step in isolation — if one tab's rendering throws (a bug
+  // in that tab specifically), it no longer takes down the whole session
+  // or hides the other tabs, which were working fine.
+  function safeRender(label, fn) {
+    try {
+      fn();
+    } catch (err) {
+      console.error(`${label} failed to render:`, err);
+      showMsg(`${label} failed to load: ${err.message}`, 'error');
+    }
+  }
+
   async function connect() {
     try {
       await loadAll();
@@ -823,15 +837,19 @@
       dashboardSection.style.display = 'block';
       logoutBtn.style.display = 'inline-flex';
       populateCategorySelect();
-      renderOverview();
-      renderList();
-      renderCategories();
-      fillSettingsForm();
-      renderPages();
     } catch (err) {
       showMsg(err.message, 'error');
       localStorage.removeItem(TOKEN_KEY);
+      return;
     }
+
+    // Each tab renders independently now — a failure in one won't wipe
+    // the session or block the others from showing correctly.
+    safeRender('Dashboard', renderOverview);
+    safeRender('Articles', renderList);
+    safeRender('Categories', renderCategories);
+    safeRender('Settings', fillSettingsForm);
+    safeRender('Pages', renderPages);
   }
 
   loginBtn.addEventListener('click', () => {
