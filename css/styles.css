@@ -122,6 +122,33 @@ ul { list-style: none; }
 
 .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
 
+/* ===== More menu (top-left "..." button injected by JS) ===== */
+.more-menu-wrap { position: relative; display: flex; align-items: center; margin-right: 0.5rem; }
+
+.more-toggle {
+  background: transparent; border: 1px solid var(--rule); width: 36px; height: 36px;
+  border-radius: 50%; cursor: pointer; display: grid; place-items: center;
+  color: var(--text-muted); transition: border-color var(--transition), color var(--transition);
+}
+.more-toggle:hover, .more-toggle[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+
+.more-menu {
+  position: absolute; top: calc(100% + 8px); left: 0; min-width: 180px;
+  background: var(--bg); border: 1px solid var(--rule-strong);
+  box-shadow: var(--shadow-lg); z-index: 200;
+  display: flex; flex-direction: column;
+  transform: translateY(-6px); opacity: 0; pointer-events: none;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.more-menu.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+
+.more-menu a {
+  padding: 0.7rem 1rem; font-family: var(--font-mono); font-size: 0.82rem;
+  color: var(--text); border-bottom: 1px solid var(--rule);
+}
+.more-menu a:last-child { border-bottom: none; }
+.more-menu a:hover { color: var(--accent); background: var(--bg-alt); }
+
 .theme-toggle {
   background: transparent;
   border: 1px solid var(--rule);
