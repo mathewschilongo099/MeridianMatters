@@ -167,20 +167,8 @@
   <header class="site-header">
     <div class="container nav-inner">
       <a href="index.html" class="logo">Meridian<span>Matters</span></a>
-      <nav class="nav-links" id="nav-links" aria-label="Main navigation">
-        <a href="index.html">Home</a>
-        <a href="news.html">Global News</a>
-        <a href="sports.html">Sports</a>
-        <a href="health.html">Health</a>
-        <a href="finance.html">Finance</a>
-      </nav>
       <div class="nav-actions">
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode"></button>
-        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-        </button>
       </div>
     </div>
   </header>
@@ -210,6 +198,7 @@
           <button data-tab="articles">Articles</button>
           <button data-tab="categories">Categories</button>
           <button data-tab="settings">Settings</button>
+          <button data-tab="pages">Pages</button>
         </div>
 
         <div class="tab-panel active" id="tab-overview">
@@ -391,6 +380,36 @@
             <textarea id="s-maintenance-msg" rows="2"></textarea>
           </div>
           <button class="btn accent" id="settings-save-btn">Save Settings</button>
+        </div>
+
+        <div class="tab-panel" id="tab-pages">
+          <div class="toolbar">
+            <span class="status">About / Contact / Privacy / custom pages</span>
+            <button class="btn accent" id="new-page-btn">+ New Page</button>
+          </div>
+
+          <div class="edit-panel" id="page-edit-panel">
+            <h2 id="page-edit-title">Edit Page</h2>
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="p-title">
+            </div>
+            <div class="field">
+              <label>ID (used in the link — lowercase, no spaces)</label>
+              <input type="text" id="p-id">
+            </div>
+            <div class="field">
+              <label>Content</label>
+              <textarea id="p-content" rows="8"></textarea>
+              <p class="help">Separate paragraphs with a blank line.</p>
+            </div>
+            <div class="edit-actions">
+              <button class="btn accent" id="page-save-btn">Save Page</button>
+              <button class="btn secondary" id="page-cancel-btn">Cancel</button>
+            </div>
+          </div>
+
+          <div id="page-list"></div>
         </div>
       </section>
     </div>
