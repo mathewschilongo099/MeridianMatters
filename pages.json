@@ -1,0 +1,22 @@
+{
+  "pages": [
+    {
+      "id": "about",
+      "title": "Our Mission",
+      "content": "MeridianMatters exists to deliver clear, fast, accurate reporting across global news, sports, health, and finance.\n\nWe believe good journalism should be direct and free of noise \u2014 no clickbait, no filler, just the story and the context you need to understand it.",
+      "order": 1
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "content": "Have a tip, correction, or question? Reach out any time.\n\nEmail: hello@meridianmatters.example\n\nWe read every message, though response times may vary.",
+      "order": 2
+    },
+    {
+      "id": "privacy",
+      "title": "Privacy",
+      "content": "MeridianMatters respects your privacy. This site does not sell personal data.\n\nStandard web analytics may be used to understand overall traffic patterns. No personally identifying information is collected beyond what's necessary to operate the site.",
+      "order": 3
+    }
+  ]
+}
