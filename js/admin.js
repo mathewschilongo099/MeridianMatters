@@ -7,6 +7,7 @@
   const ARTICLES_PATH = 'data/articles.json';
   const CATEGORIES_PATH = 'data/categories.json';
   const SETTINGS_PATH = 'data/settings.json';
+  const PAGES_PATH = 'data/pages.json';
   const GENERATE_WORKFLOW_NAME = 'Generate Articles';
   const TOKEN_KEY = 'mm_admin_token';
 
@@ -62,6 +63,16 @@
   const catSaveBtn = document.getElementById('cat-save-btn');
   const catCancelBtn = document.getElementById('cat-cancel-btn');
 
+  const pageListEl = document.getElementById('page-list');
+  const pageEditPanel = document.getElementById('page-edit-panel');
+  const pageEditTitle = document.getElementById('page-edit-title');
+  const pTitle = document.getElementById('p-title');
+  const pId = document.getElementById('p-id');
+  const pContent = document.getElementById('p-content');
+  const newPageBtn = document.getElementById('new-page-btn');
+  const pageSaveBtn = document.getElementById('page-save-btn');
+  const pageCancelBtn = document.getElementById('page-cancel-btn');
+
   const sSiteName = document.getElementById('s-site-name');
   const sTagline = document.getElementById('s-tagline');
   const sLogo = document.getElementById('s-logo');
@@ -74,9 +85,11 @@
   let articles = [];
   let categories = [];
   let settings = {};
-  let shas = { articles: null, categories: null, settings: null };
+  let pages = [];
+  let shas = { articles: null, categories: null, settings: null, pages: null };
   let editingId = null;      // article being edited, or 'NEW'
   let editingCatId = null;   // category being edited, or 'NEW'
+  let editingPageId = null;  // page being edited, or 'NEW'
 
   function getToken() { return localStorage.getItem(TOKEN_KEY); }
 
@@ -142,14 +155,18 @@
   async function saveSettings(message) {
     shas.settings = await ghPutFile(SETTINGS_PATH, settings, shas.settings, message);
   }
+  async function savePages(message) {
+    shas.pages = await ghPutFile(PAGES_PATH, { pages }, shas.pages, message);
+  }
 
   // ---- Load everything ----
 
   async function loadAll() {
-    const [articlesRes, categoriesRes, settingsRes] = await Promise.all([
+    const [articlesRes, categoriesRes, settingsRes, pagesRes] = await Promise.all([
       ghGetFile(ARTICLES_PATH),
       ghGetFile(CATEGORIES_PATH),
       ghGetFile(SETTINGS_PATH),
+      ghGetFile(PAGES_PATH),
     ]);
 
     articles = articlesRes ? (articlesRes.json.articles || []) : [];
@@ -164,11 +181,17 @@
     };
     shas.settings = settingsRes ? settingsRes.sha : null;
 
+    pages = pagesRes ? (pagesRes.json.pages || []) : [];
+    shas.pages = pagesRes ? pagesRes.sha : null;
+
     if (!categoriesRes) {
       showMsg('No data/categories.json found in the repo yet — category management will create it on first save.', 'error');
     }
     if (!settingsRes) {
       showMsg('No data/settings.json found in the repo yet — settings will create it on first save.', 'error');
+    }
+    if (!pagesRes) {
+      showMsg('No data/pages.json found in the repo yet — Pages management will create it on first save.', 'error');
     }
   }
 
@@ -657,6 +680,107 @@
     }
   }
 
+  // ---- Pages ----
+
+  function renderPages() {
+    if (!pages.length) {
+      pageListEl.innerHTML = '<p class="empty">No pages yet.</p>';
+      return;
+    }
+    pageListEl.innerHTML = pages.map(p => `
+      <div class="cat-row" data-id="${p.id}">
+        <div class="cat-head">
+          <div>
+            <h3>${p.title}</h3>
+            <p>/page.html?slug=${p.id}</p>
+          </div>
+        </div>
+        <div class="edit-actions" style="margin-top:0.75rem;">
+          <button class="btn secondary" data-page-action="edit" data-id="${p.id}">Edit</button>
+          <button class="btn danger" data-page-action="delete" data-id="${p.id}">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  pageListEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-page-action]');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const action = btn.dataset.pageAction;
+    if (action === 'edit') openPageEdit(id);
+    if (action === 'delete') handlePageDelete(id);
+  });
+
+  function openPageEdit(id) {
+    const page = pages.find(p => p.id === id);
+    if (!page) return;
+    editingPageId = id;
+    pageEditTitle.textContent = 'Edit Page';
+    pTitle.value = page.title || '';
+    pId.value = page.id || '';
+    pContent.value = page.content || '';
+    pageEditPanel.classList.add('open');
+    pageEditPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  newPageBtn.addEventListener('click', () => {
+    editingPageId = 'NEW';
+    pageEditTitle.textContent = 'New Page';
+    pTitle.value = ''; pId.value = ''; pContent.value = '';
+    pageEditPanel.classList.add('open');
+    pageEditPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    pTitle.focus();
+  });
+
+  pageCancelBtn.addEventListener('click', () => {
+    pageEditPanel.classList.remove('open');
+    editingPageId = null;
+  });
+
+  pageSaveBtn.addEventListener('click', async () => {
+    const title = pTitle.value.trim();
+    if (!title) { showMsg('Page title is required.', 'error'); return; }
+    const id = slugify(pId.value.trim() || title);
+    const content = pContent.value.trim();
+
+    pageSaveBtn.disabled = true;
+    try {
+      if (editingPageId === 'NEW') {
+        if (pages.some(p => p.id === id)) throw new Error('A page with that ID already exists.');
+        pages.push({ id, title, content, order: pages.length + 1 });
+        await savePages(`Admin: create page "${title}"`);
+      } else {
+        const idx = pages.findIndex(p => p.id === editingPageId);
+        if (idx === -1) throw new Error('Page no longer exists.');
+        pages[idx] = { ...pages[idx], id, title, content };
+        await savePages(`Admin: update page "${title}"`);
+      }
+      showMsg('Saved.', 'success');
+      pageEditPanel.classList.remove('open');
+      editingPageId = null;
+      renderPages();
+    } catch (err) {
+      showMsg(err.message, 'error');
+    } finally {
+      pageSaveBtn.disabled = false;
+    }
+  });
+
+  async function handlePageDelete(id) {
+    const page = pages.find(p => p.id === id);
+    if (!page) return;
+    if (!confirm(`Delete "${page.title}"? This cannot be undone.`)) return;
+    try {
+      pages = pages.filter(p => p.id !== id);
+      await savePages(`Admin: delete page "${page.title}"`);
+      showMsg('Deleted.', 'success');
+      renderPages();
+    } catch (err) {
+      showMsg(err.message, 'error');
+    }
+  }
+
   // ---- Settings ----
 
   function fillSettingsForm() {
@@ -703,6 +827,7 @@
       renderList();
       renderCategories();
       fillSettingsForm();
+      renderPages();
     } catch (err) {
       showMsg(err.message, 'error');
       localStorage.removeItem(TOKEN_KEY);
