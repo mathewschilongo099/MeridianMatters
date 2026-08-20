@@ -31,8 +31,12 @@
       display: flex; flex-wrap: wrap; gap: 0.6rem;
     }
     .article-page .hero-image {
-      width: 100%; border-radius: 0; margin-bottom: 2rem; aspect-ratio: 16/9;
+      width: 100%; border-radius: 0; margin-bottom: 0.4rem; aspect-ratio: 16/9;
       object-fit: cover; background: var(--bg-alt);
+    }
+    .article-page .hero-image-credit {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
+      margin-bottom: 1.75rem; text-transform: uppercase; letter-spacing: 0.03em;
     }
     .article-page .content { font-size: 1.08rem; line-height: 1.75; color: var(--text); font-family: var(--font-body); }
     .article-page .content p { margin-bottom: 1.25rem; }
@@ -43,6 +47,12 @@
       font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
       margin-bottom: 1.75rem; text-transform: uppercase; letter-spacing: 0.03em;
     }
+    .article-page .content .source-link,
+    .article-page .content .inline-link {
+      color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor;
+    }
+    .article-page .content .source-link:hover,
+    .article-page .content .inline-link:hover { color: var(--accent-hover); }
     .article-page .loading, .article-page .error { color: var(--text-muted); padding: 3rem 0; text-align: center; font-family: var(--font-mono); font-size: 0.85rem; }
 
     .next-article {
@@ -177,7 +187,34 @@
 
         let bodyHtml = '';
         if (article.content) {
-          const paragraphs = article.content.split(/\n+/).filter(p => p.trim());
+          let rawContent = article.content;
+
+          // ---- Cross-links to other MeridianMatters articles ----
+          // Converts [[id|visible text]] markers (inserted by the AI
+          // generator when relevant) into real internal links. Falls back
+          // gracefully if the referenced article no longer exists — the
+          // link just leads to the standard "Article not found" page.
+          rawContent = rawContent.replace(/\[\[([\w-]+)\|([^\]]+)\]\]/g, (m, linkId, text) => {
+            return `<a href="article.html?id=${encodeURIComponent(linkId)}" class="inline-link">${text}</a>`;
+          });
+
+          const paragraphs = rawContent.split(/\n+/).filter(p => p.trim());
+
+          // ---- Auto-link the source outlet's name (e.g. "BBC") to the
+          // original story, first mention only, so it doesn't feel spammy. ----
+          if (article.sourceName && article.sourceUrl) {
+            const escaped = article.sourceName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const sourceRegex = new RegExp(`\\b(${escaped})\\b`, 'i');
+            let linked = false;
+            for (let i = 0; i < paragraphs.length; i++) {
+              if (linked) break;
+              if (sourceRegex.test(paragraphs[i])) {
+                paragraphs[i] = paragraphs[i].replace(sourceRegex,
+                  `<a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" class="source-link">$1</a>`);
+                linked = true;
+              }
+            }
+          }
 
           // Interleave any inline images roughly evenly through the body,
           // the way a real publication breaks up long text — not just one
@@ -190,7 +227,7 @@
             inlineImages.forEach((img, i) => {
               const insertAt = slot * (i + 1) + i; // account for prior insertions shifting index
               const imgHtml = `<img src="${img.url}" alt="${img.alt || article.title}" loading="lazy">` +
-                (img.alt ? `<div class="img-caption">${img.alt}</div>` : '');
+                (img.credit ? `<div class="img-caption">${img.credit}</div>` : (img.alt ? `<div class="img-caption">${img.alt}</div>` : ''));
               parts.splice(Math.min(insertAt, parts.length), 0, imgHtml);
             });
           }
@@ -250,7 +287,10 @@
             <span>·</span>
             <span>By ${article.author}</span>
           </div>
-          ${article.image ? `<img class="hero-image" src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">` : ''}
+          ${article.image ? `
+            <img class="hero-image" src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">
+            ${article.imageCredit ? `<div class="hero-image-credit">${article.imageCredit}</div>` : ''}
+          ` : ''}
           <div class="content">
             ${bodyHtml || `<p>${article.summary}</p>`}
           </div>
