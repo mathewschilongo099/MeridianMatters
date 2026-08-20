@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeridianMatters</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .static-page { max-width: 720px; margin: 0 auto; padding: 2.25rem 0 4rem; }
+    .static-page .back-link {
+      display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 1.5rem;
+      font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--accent); font-weight: 600;
+    }
+    .static-page h1 {
+      font-family: var(--font-display); font-size: clamp(1.7rem, 4.2vw, 2.5rem);
+      font-weight: 800; text-transform: uppercase; margin-bottom: 1.5rem;
+      padding-bottom: 1rem; border-bottom: 2px solid var(--rule-strong);
+    }
+    .static-page .content { font-size: 1.08rem; line-height: 1.75; color: var(--text); font-family: var(--font-body); }
+    .static-page .content p { margin-bottom: 1.25rem; }
+    .static-page .loading, .static-page .error { color: var(--text-muted); padding: 3rem 0; text-align: center; font-family: var(--font-mono); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">Meridian<span>Matters</span></a>
+      <nav class="nav-links" id="nav-links" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="news.html">Global News</a>
+        <a href="sports.html">Sports</a>
+        <a href="health.html">Health</a>
+        <a href="finance.html">Finance</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode"></button>
+        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="wire-ticker" id="wire-ticker"></div>
+
+  <main>
+    <div class="container">
+      <div class="static-page" id="page-root">
+        <p class="loading">Loading…</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo">Meridian<span>Matters</span></div>
+          <p>Your trusted source for global news, sports, health, and finance insights.</p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>Sections</h4>
+            <a href="news.html">Global News</a>
+            <a href="sports.html">Sports</a>
+            <a href="health.html">Health</a>
+            <a href="finance.html">Finance</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2026 MeridianMatters. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    (async function () {
+      const root = document.getElementById('page-root');
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('slug');
+
+      if (!slug) {
+        root.innerHTML = '<p class="error">Page not found.</p>';
+        return;
+      }
+
+      try {
+        const res = await fetch('data/pages.json?t=' + Date.now());
+        const data = await res.json();
+        const page = (data.pages || []).find(p => p.id === slug);
+
+        if (!page) {
+          root.innerHTML = '<p class="error">Page not found.</p>';
+          return;
+        }
+
+        document.title = page.title + ' – MeridianMatters';
+
+        const paragraphs = (page.content || '').split(/\n+/).filter(p => p.trim());
+        const bodyHtml = paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+
+        root.innerHTML = `
+          <a href="javascript:history.back()" class="back-link">← Back</a>
+          <h1>${page.title}</h1>
+          <div class="content">${bodyHtml}</div>
+        `;
+      } catch (err) {
+        console.error(err);
+        root.innerHTML = '<p class="error">Failed to load page.</p>';
+      }
+    })();
+  </script>
+</body>
+</html>
