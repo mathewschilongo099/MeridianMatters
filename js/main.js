@@ -91,31 +91,36 @@
     `;
   }
 
-  async function loadArticles() {
-    try {
-      const res = await fetch('data/articles.json?t=' + Date.now());
-      if (!res.ok) throw new Error('Failed to load');
-      const data = await res.json();
-      const all = data.articles || [];
+  // Cache the articles fetch so the ticker, hero, and article list (which
+  // all load on the homepage) share one network request instead of each
+  // firing its own — matters most on slow connections.
+  let articlesPromise = null;
 
-      // Visibility rule: legacy articles with no "status" field are treated
-      // as published (so nothing already live disappears). Draft/review
-      // never show publicly. Scheduled articles become visible automatically
-      // once their scheduledDate has passed, without needing a new commit.
-      const now = new Date();
-      return all.filter(a => {
-        const status = a.status || 'published';
-        if (status === 'published') return true;
-        if (status === 'scheduled') {
-          const when = a.scheduledDate ? new Date(a.scheduledDate) : null;
-          return when && when <= now;
-        }
-        return false; // draft, review
-      });
-    } catch (err) {
-      console.error(err);
-      return [];
-    }
+  async function loadArticles() {
+    if (articlesPromise) return articlesPromise;
+    articlesPromise = (async () => {
+      try {
+        const res = await fetch('data/articles.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Failed to load');
+        const data = await res.json();
+        const all = data.articles || [];
+
+        const now = new Date();
+        return all.filter(a => {
+          const status = a.status || 'published';
+          if (status === 'published') return true;
+          if (status === 'scheduled') {
+            const when = a.scheduledDate ? new Date(a.scheduledDate) : null;
+            return when && when <= now;
+          }
+          return false;
+        });
+      } catch (err) {
+        console.error(err);
+        return [];
+      }
+    })();
+    return articlesPromise;
   }
 
   async function loadSettings() {
@@ -241,6 +246,87 @@
     `;
   }
 
+  // ===== Pages (About / Contact / Privacy / custom) =====
+  // Loaded once and reused by both the header "more" menu and the footer.
+  let pagesPromise = null;
+  async function loadPages() {
+    if (pagesPromise) return pagesPromise;
+    pagesPromise = (async () => {
+      try {
+        const res = await fetch('data/pages.json?t=' + Date.now());
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data.pages || []).sort((a, b) => (a.order || 0) - (b.order || 0));
+      } catch {
+        return [];
+      }
+    })();
+    return pagesPromise;
+  }
+
+  // Injects a "⋯" button at the top-left of the header (before the logo)
+  // on every page, with a dropdown listing About/Contact/Privacy/custom
+  // pages. Built in JS so it appears everywhere without editing each HTML
+  // file by hand.
+  async function renderMoreMenu() {
+    if (window.location.pathname.includes('admin')) return; // admin panel keeps its own minimal header
+    const navInner = document.querySelector('.site-header .nav-inner');
+    if (!navInner || document.getElementById('more-toggle')) return; // already injected or no header
+
+    const pages = await loadPages();
+    if (!pages.length) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'more-menu-wrap';
+    wrap.innerHTML = `
+      <button class="more-toggle" id="more-toggle" aria-label="More" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+        </svg>
+      </button>
+      <div class="more-menu" id="more-menu">
+        ${pages.map(p => `<a href="page.html?slug=${encodeURIComponent(p.id)}">${p.title}</a>`).join('')}
+      </div>
+    `;
+    navInner.insertBefore(wrap, navInner.firstChild);
+
+    const toggle = document.getElementById('more-toggle');
+    const menu = document.getElementById('more-menu');
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', (e) => {
+      if (!wrap.contains(e.target)) {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // Removes the old hardcoded "About" footer column (dead "#" links) if
+  // present on this page, and replaces it with real links built from the
+  // same pages data — so the footer and the header menu never drift apart.
+  async function fixFooterLinks() {
+    const footerLinksContainer = document.querySelector('.footer-links');
+    if (!footerLinksContainer) return;
+
+    // Keep only the first column (Sections); drop any legacy second column.
+    const columns = footerLinksContainer.querySelectorAll(':scope > div');
+    columns.forEach((col, i) => { if (i > 0) col.remove(); });
+
+    const pages = await loadPages();
+    if (!pages.length) return;
+
+    const aboutCol = document.createElement('div');
+    aboutCol.innerHTML = `
+      <h4>About</h4>
+      ${pages.map(p => `<a href="page.html?slug=${encodeURIComponent(p.id)}">${p.title}</a>`).join('')}
+    `;
+    footerLinksContainer.appendChild(aboutCol);
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     try {
       await applySettings();
@@ -249,6 +335,8 @@
     }
 
     renderTicker();
+    renderMoreMenu();
+    fixFooterLinks();
 
     const path = window.location.pathname;
     if (path.endsWith('index.html') || path.endsWith('/') || path === '') {
