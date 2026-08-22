@@ -352,4 +352,10 @@
       renderCategoryArticles('finance');
     }
   });
+
+  // Expose the cached loader so other inline scripts (e.g. article.html)
+  // can reuse the same in-flight/completed fetch instead of downloading
+  // articles.json a second time.
+  window.MM = window.MM || {};
+  window.MM.loadArticles = loadArticles;
 })();
