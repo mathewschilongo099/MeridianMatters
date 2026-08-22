@@ -154,24 +154,7 @@
       }
 
       try {
-        const res = await fetch('data/articles.json?t=' + Date.now());
-        const data = await res.json();
-        const all = data.articles || [];
-
-        // Only ever surface publicly-visible articles here — same rule as
-        // the rest of the site (missing status = legacy published article,
-        // scheduled articles only count once their date has passed).
-        const now = new Date();
-        const visible = all.filter(a => {
-          const status = a.status || 'published';
-          if (status === 'published') return true;
-          if (status === 'scheduled') {
-            const when = a.scheduledDate ? new Date(a.scheduledDate) : null;
-            return when && when <= now;
-          }
-          return false;
-        });
-
+        const visible = await window.MM.loadArticles();
         const article = visible.find(a => a.id === id);
 
         if (!article) {
