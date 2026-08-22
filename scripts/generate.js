@@ -271,7 +271,7 @@ async function getImage(query) {
     return {
       url: optimizedUrl,
       alt: cleanCaption(photo.alt_description, query),
-      credit: `Photo: ${photographer} / Unsplash`
+      credit: `Photo: ${photographer}`
     };
   } catch (err) {
     console.error('  Unsplash error:', err.message);
