@@ -1,4 +1,13 @@
-<!DOCTYPE html>
+<script>
+  window.addEventListener('error', function (e) {
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#d1293d;color:#fff;padding:12px;margin:12px 0;font-family:monospace;font-size:13px;white-space:pre-wrap;';
+    box.textContent = 'JS ERROR: ' + e.message + '\n' + (e.filename || '') + ':' + (e.lineno || '');
+    document.body.prepend(box);
+  });
+</script>
+<script src="js/main.js"></script>
+<script src="js/admin.js"></script><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
