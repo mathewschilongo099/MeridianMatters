@@ -3,89 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Article – MeridianMatters</title>
-  <meta name="description" content="Read the full article on MeridianMatters.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>Admin – MeridianMatters</title>
+  <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="css/styles.css">
   <style>
-    .article-page { max-width: 720px; margin: 0 auto; padding: 2.25rem 0 4rem; }
-    .article-page .back-link {
-      display: inline-flex; align-items: center; gap: 0.35rem; margin-bottom: 1.5rem;
-      font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase;
-      letter-spacing: 0.04em; color: var(--accent); font-weight: 600;
+    .admin-wrap { max-width: 920px; margin: 0 auto; padding: 2rem 0 4rem; }
+    .admin-wrap h1 {
+      font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+      text-transform: uppercase; margin-bottom: 0.4rem;
     }
-    .article-page .back-link:hover { color: var(--accent-hover); }
-    .article-page .category-tag {
-      font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 0.75rem;
-    }
-    .article-page h1 {
-      font-family: var(--font-display); font-size: clamp(1.7rem, 4.2vw, 2.5rem);
-      font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; margin-bottom: 1rem;
-    }
-    .article-page .meta {
-      font-family: var(--font-mono); color: var(--text-muted); font-size: 0.82rem;
-      text-transform: uppercase; letter-spacing: 0.02em;
-      margin-bottom: 1.75rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--rule);
-      display: flex; flex-wrap: wrap; gap: 0.6rem;
-    }
-    .article-page .hero-image {
-      width: 100%; border-radius: 0; margin-bottom: 0.4rem; aspect-ratio: 16/9;
-      object-fit: cover; background: var(--bg-alt);
-    }
-    .article-page .hero-image-credit {
-      font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
-      margin-bottom: 1.75rem; text-transform: uppercase; letter-spacing: 0.03em;
-    }
-    .article-page .content { font-size: 1.08rem; line-height: 1.75; color: var(--text); font-family: var(--font-body); }
-    .article-page .content p { margin-bottom: 1.25rem; }
-    .article-page .content img {
-      width: 100%; border-radius: 0; margin: 0.5rem 0 0.3rem; aspect-ratio: 16/9; object-fit: cover;
-    }
-    .article-page .content .img-caption {
-      font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);
-      margin-bottom: 1.75rem; text-transform: uppercase; letter-spacing: 0.03em;
-    }
-    .article-page .content .source-link,
-    .article-page .content .inline-link {
-      color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor;
-    }
-    .article-page .content .source-link:hover,
-    .article-page .content .inline-link:hover { color: var(--accent-hover); }
-    .article-page .loading, .article-page .error { color: var(--text-muted); padding: 3rem 0; text-align: center; font-family: var(--font-mono); font-size: 0.85rem; }
+    .admin-wrap .sub { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.5rem; }
 
-    .next-article {
-      display: block; margin-top: 2.5rem; padding: 1.25rem 1.4rem;
-      border: 1px solid var(--rule-strong); text-decoration: none;
+    .login-panel { border: 1px solid var(--rule); padding: 1.75rem; max-width: 460px; }
+    .login-panel label {
+      display: block; font-family: var(--font-mono); font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.4rem;
     }
-    .next-article .label {
-      font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent);
-      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;
+    .login-panel input {
+      width: 100%; padding: 0.7rem 0.8rem; border: 1px solid var(--rule);
+      background: var(--bg); color: var(--text); font-family: var(--font-mono);
+      font-size: 0.9rem; margin-bottom: 1rem; border-radius: 0;
     }
-    .next-article h4 {
-      font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; color: var(--text);
+    .login-panel .hint { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5; }
+    .login-panel .hint a { color: var(--accent); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 0.65rem 1.1rem; border: 1px solid var(--rule-strong);
+      background: var(--rule-strong); color: var(--bg); cursor: pointer;
+      transition: opacity var(--transition);
     }
-    .related-section { margin-top: 2.5rem; border-top: 2px solid var(--rule-strong); padding-top: 1.25rem; }
-    .related-section h3 {
-      font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
-      text-transform: uppercase; margin-bottom: 0.75rem;
+    .btn:hover { opacity: 0.85; }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--rule); }
+    .btn.danger { background: var(--wire-red); border-color: var(--wire-red); color: #fff; }
+    .btn.accent { background: var(--accent); border-color: var(--accent); color: #05131a; }
+    .btn.small { padding: 0.4rem 0.65rem; font-size: 0.68rem; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .admin-tabs {
+      display: flex; gap: 0; border-bottom: 2px solid var(--rule-strong);
+      margin-bottom: 1.5rem; overflow-x: auto;
     }
-    .related-list { display: flex; flex-direction: column; }
-    .related-row {
-      display: grid; grid-template-columns: 72px 1fr; gap: 0.9rem;
-      padding: 0.75rem 0; border-bottom: 1px solid var(--rule); text-decoration: none; color: inherit;
+    .admin-tabs button {
+      font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted);
+      background: none; border: none; padding: 0.75rem 1rem; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap;
     }
-    .related-row .thumb {
-      width: 72px; height: 56px; background: var(--bg-alt); overflow: hidden;
+    .admin-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); margin-bottom: 2rem;
     }
-    .related-row .thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .related-row h4 {
-      font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; line-height: 1.3;
+    .stat-card {
+      border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+      padding: 1.1rem; display: flex; flex-direction: column; gap: 0.3rem;
     }
-    .related-row .cat {
-      font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent);
+    .stat-card .num { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; }
+    .stat-card .label {
+      font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--text-muted);
+    }
+    .stat-card.cta { justify-content: center; }
+    .stat-card.cta .label { color: var(--accent); }
+
+    .activity-feed { border-top: 1px solid var(--rule); }
+    .activity-row {
+      padding: 0.8rem 0; border-bottom: 1px solid var(--rule);
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .activity-row .msg-text { font-size: 0.92rem; }
+    .activity-row .meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); }
+
+    .toolbar {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+      justify-content: space-between; margin-bottom: 1.5rem;
+      padding-bottom: 1rem; border-bottom: 2px solid var(--rule-strong);
+    }
+    .toolbar .status { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); }
+    .toolbar-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+    .admin-list { border-top: 1px solid var(--rule); }
+    .admin-row {
+      display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
+      padding: 0.9rem 0; border-bottom: 1px solid var(--rule);
+    }
+    .admin-row .info { min-width: 0; }
+    .admin-row .cat {
+      font-family: var(--font-mono); font-size: 0.68rem; color: var(--accent);
       text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .admin-row h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin: 0.15rem 0; }
+    .admin-row .meta { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); }
+    .badge {
+      display: inline-block; font-family: var(--font-mono); font-size: 0.6rem;
+      text-transform: uppercase; letter-spacing: 0.04em; padding: 0.15rem 0.4rem;
+      margin-right: 0.3rem; border: 1px solid currentColor;
+    }
+    .badge.status-draft { color: var(--text-muted); }
+    .badge.status-review { color: #c98a1f; }
+    .badge.status-scheduled { color: var(--accent); }
+    .badge.status-published { color: #1a9e5c; }
+    .badge.flag-breaking { color: var(--wire-red); }
+    .badge.flag-pinned { color: var(--text); }
+    .admin-row .actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .admin-row .actions .btn { padding: 0.45rem 0.7rem; font-size: 0.7rem; }
+
+    .edit-panel {
+      display: none; border: 1px solid var(--rule-strong); padding: 1.5rem;
+      margin-bottom: 2rem; background: var(--bg-alt);
+    }
+    .edit-panel.open { display: block; }
+    .edit-panel h2 {
+      font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 600px) { .field-row { grid-template-columns: 1fr; } }
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block; font-family: var(--font-mono); font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.35rem;
+    }
+    .field .help { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+    .field input[type="text"], .field input[type="url"], .field input[type="date"],
+    .field input[type="color"], .field select, .field textarea {
+      width: 100%; padding: 0.6rem 0.7rem; border: 1px solid var(--rule);
+      background: var(--bg); color: var(--text); font-family: var(--font-body);
+      font-size: 0.92rem; border-radius: 0;
+    }
+    .field textarea { resize: vertical; min-height: 90px; font-family: var(--font-body); line-height: 1.5; }
+    .field.checkbox { display: flex; align-items: center; gap: 0.5rem; }
+    .field.checkbox input { width: auto; }
+    .field.checkbox label { margin-bottom: 0; }
+    .checkbox-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .edit-actions { display: flex; gap: 0.6rem; margin-top: 1.25rem; flex-wrap: wrap; }
+
+    .msg { font-family: var(--font-mono); font-size: 0.8rem; padding: 0.75rem 1rem; margin-bottom: 1.25rem; border: 1px solid; }
+    .msg.error { color: var(--wire-red); border-color: var(--wire-red); background: rgba(209,41,61,0.08); }
+    .msg.success { color: var(--accent); border-color: var(--accent); background: var(--accent-tint); }
+
+    .empty { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem; padding: 2rem 0; text-align: center; }
+
+    .cat-row { border: 1px solid var(--rule); padding: 1rem; margin-bottom: 0.75rem; }
+    .cat-row .cat-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+    .cat-row h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; }
+    .cat-row p { color: var(--text-muted); font-size: 0.85rem; margin: 0.3rem 0; }
+    .cat-row .sub-list { margin-top: 0.6rem; padding-left: 0.75rem; border-left: 2px solid var(--rule); }
+    .cat-row .sub-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 0.3rem 0; }
+    .cat-order-btns { display: flex; flex-direction: column; gap: 0.2rem; }
+    .cat-order-btns button {
+      background: none; border: 1px solid var(--rule); width: 26px; height: 22px;
+      cursor: pointer; color: var(--text); font-size: 0.7rem; line-height: 1;
     }
   </style>
 </head>
@@ -93,198 +167,268 @@
   <header class="site-header">
     <div class="container nav-inner">
       <a href="index.html" class="logo">Meridian<span>Matters</span></a>
-      <nav class="nav-links" id="nav-links" aria-label="Main navigation">
-        <a href="index.html">Home</a>
-        <a href="news.html">Global News</a>
-        <a href="sports.html">Sports</a>
-        <a href="health.html">Health</a>
-        <a href="finance.html">Finance</a>
-      </nav>
       <div class="nav-actions">
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode"></button>
-        <button class="menu-toggle" id="menu-toggle" aria-label="Open menu" aria-expanded="false">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-        </button>
       </div>
     </div>
   </header>
-  <div class="wire-ticker" id="wire-ticker"></div>
 
   <main>
-    <div class="container">
-      <article class="article-page" id="article-root">
-        <p class="loading">Loading article...</p>
-      </article>
+    <div class="container admin-wrap">
+      <h1>Admin</h1>
+      <p class="sub">Manage MeridianMatters without touching GitHub directly.</p>
+
+      <!-- Moved outside dashboard-section so error messages are visible
+           even before login succeeds (dashboard-section stays display:none
+           until loadAll() succeeds, which was hiding all connect errors). -->
+      <div id="msg-area"></div>
+
+      <section id="login-section" class="login-panel">
+        <label for="token-input">GitHub personal access token</label>
+        <input type="password" id="token-input" placeholder="github_pat_..." autocomplete="off">
+        <p class="hint">
+          Create one at <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">github.com/settings/tokens</a> →
+          fine-grained token → scope to the <strong>MeridianMatters</strong> repo only → grant
+          <strong>Contents: Read and write</strong> and <strong>Actions: Read and write</strong>.
+          Saved only on this device, never uploaded anywhere else by this page.
+        </p>
+        <button class="btn accent" id="login-btn">Connect</button>
+      </section>
+
+      <section id="dashboard-section" style="display:none;">
+
+        <div class="admin-tabs" id="admin-tabs">
+          <button data-tab="overview" class="active">Dashboard</button>
+          <button data-tab="articles">Articles</button>
+          <button data-tab="categories">Categories</button>
+          <button data-tab="settings">Settings</button>
+          <button data-tab="pages">Pages</button>
+        </div>
+
+        <div class="tab-panel active" id="tab-overview">
+          <div class="stat-grid" id="stat-grid"></div>
+          <div class="toolbar" style="border-bottom:2px solid var(--rule-strong);">
+            <span class="status">Recent Activity</span>
+            <span class="status" style="color:var(--text-muted);">from GitHub commit history</span>
+          </div>
+          <div class="activity-feed" id="activity-feed">
+            <p class="empty">Loading…</p>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-articles">
+          <div class="toolbar">
+            <span class="status" id="status-text">Loading…</span>
+            <div class="toolbar-actions">
+              <button class="btn accent" id="new-btn">+ New Article</button>
+              <button class="btn accent" id="generate-btn">+ Generate with AI</button>
+            </div>
+          </div>
+
+          <div class="edit-panel" id="edit-panel">
+            <h2 id="edit-panel-title">Edit Article</h2>
+
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="f-title">
+            </div>
+            <div class="field">
+              <label>URL Slug</label>
+              <input type="text" id="f-slug">
+              <p class="help">Used in the article link. Auto-filled from title if left blank on new articles.</p>
+            </div>
+            <div class="field">
+              <label>Summary (shown in article lists)</label>
+              <textarea id="f-summary" rows="2"></textarea>
+            </div>
+            <div class="field">
+              <label>Full content</label>
+              <textarea id="f-content" rows="8"></textarea>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>Category</label>
+                <select id="f-category"></select>
+              </div>
+              <div class="field">
+                <label>Sub-category</label>
+                <select id="f-subcategory"><option value="">— none —</option></select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Tags (comma separated)</label>
+              <input type="text" id="f-tags" placeholder="e.g. elections, europe, trade">
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>Author</label>
+                <input type="text" id="f-author">
+              </div>
+              <div class="field">
+                <label>Image URL</label>
+                <input type="url" id="f-image">
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label>Status</label>
+                <select id="f-status">
+                  <option value="draft">Draft</option>
+                  <option value="review">In Review</option>
+                  <option value="scheduled">Scheduled</option>
+                  <option value="published">Published</option>
+                </select>
+              </div>
+              <div class="field" id="f-scheduled-wrap" style="display:none;">
+                <label>Publish date</label>
+                <input type="date" id="f-scheduled-date">
+              </div>
+            </div>
+
+            <div class="checkbox-row">
+              <div class="field checkbox"><input type="checkbox" id="f-featured"><label for="f-featured">Featured (homepage lead)</label></div>
+              <div class="field checkbox"><input type="checkbox" id="f-breaking"><label for="f-breaking">Breaking</label></div>
+              <div class="field checkbox"><input type="checkbox" id="f-pinned"><label for="f-pinned">Pinned</label></div>
+            </div>
+
+            <details style="margin-bottom:1rem;">
+              <summary style="font-family:var(--font-mono); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); cursor:pointer;">SEO fields (optional)</summary>
+              <div style="margin-top:0.75rem;">
+                <div class="field">
+                  <label>Meta title</label>
+                  <input type="text" id="f-meta-title">
+                </div>
+                <div class="field">
+                  <label>Meta description</label>
+                  <textarea id="f-meta-description" rows="2"></textarea>
+                </div>
+              </div>
+            </details>
+
+            <div class="edit-actions">
+              <button class="btn accent" id="save-btn">Save Changes</button>
+              <button class="btn secondary" id="duplicate-btn" style="display:none;">Duplicate</button>
+              <button class="btn secondary" id="cancel-btn">Cancel</button>
+            </div>
+          </div>
+
+          <div class="admin-list" id="admin-list">
+            <p class="empty">Loading articles…</p>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-categories">
+          <div class="toolbar">
+            <span class="status">Categories & Sub-categories</span>
+            <button class="btn accent" id="new-cat-btn">+ New Category</button>
+          </div>
+
+          <div class="edit-panel" id="cat-edit-panel">
+            <h2 id="cat-edit-title">Edit Category</h2>
+            <div class="field">
+              <label>Name</label>
+              <input type="text" id="c-name">
+            </div>
+            <div class="field">
+              <label>ID (used for filtering — lowercase, no spaces)</label>
+              <input type="text" id="c-id">
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <textarea id="c-description" rows="2"></textarea>
+            </div>
+            <div class="field">
+              <label>Image URL</label>
+              <input type="url" id="c-image">
+            </div>
+            <div class="field">
+              <label>Sub-categories (comma separated names)</label>
+              <input type="text" id="c-subcategories" placeholder="e.g. Football, Cricket, Tennis">
+            </div>
+            <div class="edit-actions">
+              <button class="btn accent" id="cat-save-btn">Save Category</button>
+              <button class="btn secondary" id="cat-cancel-btn">Cancel</button>
+            </div>
+          </div>
+
+          <div id="cat-list"></div>
+        </div>
+
+        <div class="tab-panel" id="tab-settings">
+          <div class="field">
+            <label>Site Name</label>
+            <input type="text" id="s-site-name">
+          </div>
+          <div class="field">
+            <label>Tagline</label>
+            <input type="text" id="s-tagline">
+          </div>
+          <div class="field">
+            <label>Logo URL <span style="text-transform:none;">(leave blank to use text logo)</span></label>
+            <input type="url" id="s-logo">
+          </div>
+          <div class="field">
+            <label>Accent Color</label>
+            <input type="color" id="s-accent" style="height:44px; padding:4px;">
+          </div>
+          <div class="field checkbox">
+            <input type="checkbox" id="s-maintenance">
+            <label for="s-maintenance">Maintenance mode (shows a message instead of the site to visitors)</label>
+          </div>
+          <div class="field">
+            <label>Maintenance message</label>
+            <textarea id="s-maintenance-msg" rows="2"></textarea>
+          </div>
+          <button class="btn accent" id="settings-save-btn">Save Settings</button>
+        </div>
+
+        <div class="tab-panel" id="tab-pages">
+          <div class="toolbar">
+            <span class="status">About / Contact / Privacy / custom pages</span>
+            <button class="btn accent" id="new-page-btn">+ New Page</button>
+          </div>
+
+          <div class="edit-panel" id="page-edit-panel">
+            <h2 id="page-edit-title">Edit Page</h2>
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="p-title">
+            </div>
+            <div class="field">
+              <label>ID (used in the link — lowercase, no spaces)</label>
+              <input type="text" id="p-id">
+            </div>
+            <div class="field">
+              <label>Content</label>
+              <textarea id="p-content" rows="8"></textarea>
+              <p class="help">Separate paragraphs with a blank line.</p>
+            </div>
+            <div class="edit-actions">
+              <button class="btn accent" id="page-save-btn">Save Page</button>
+              <button class="btn secondary" id="page-cancel-btn">Cancel</button>
+            </div>
+          </div>
+
+          <div id="page-list"></div>
+        </div>
+      </section>
     </div>
   </main>
 
   <footer class="site-footer">
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-brand">
-          <div class="logo">Meridian<span>Matters</span></div>
-          <p>Your trusted source for global news, sports, health, and finance insights.</p>
-        </div>
-        <div class="footer-links">
-          <div>
-            <h4>Sections</h4>
-            <a href="news.html">Global News</a>
-            <a href="sports.html">Sports</a>
-            <a href="health.html">Health</a>
-            <a href="finance.html">Finance</a>
-          </div>
-        </div>
+        <button class="btn secondary" id="logout-btn" style="display:none;">Disconnect</button>
       </div>
-      <div class="footer-bottom">© 2026 MeridianMatters. All rights reserved.</div>
+      <div class="footer-bottom">© 2026 MeridianMatters. Admin panel — not indexed.</div>
     </div>
   </footer>
 
-  <script src="js/main.js?v=2"></script>
-  <script>
-    (async function () {
-      const root = document.getElementById('article-root');
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get('id');
-
-      if (!id) {
-        root.innerHTML = '<p class="error">Article not found.</p>';
-        return;
-      }
-
-      try {
-        const visible = await window.MM.loadArticles();
-        const article = visible.find(a => a.id === id);
-
-        if (!article) {
-          root.innerHTML = '<p class="error">Article not found.</p>';
-          return;
-        }
-
-        document.title = article.title + ' – MeridianMatters';
-
-        const categoryMap = { news: 'Global News', sports: 'Sports', health: 'Health', finance: 'Finance' };
-        const categoryLabel = categoryMap[article.category] || article.category;
-        const dateStr = new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-        let bodyHtml = '';
-        if (article.content) {
-          let rawContent = article.content;
-
-          // ---- Cross-links to other MeridianMatters articles ----
-          // Converts [[id|visible text]] markers (inserted by the AI
-          // generator when relevant) into real internal links. Falls back
-          // gracefully if the referenced article no longer exists — the
-          // link just leads to the standard "Article not found" page.
-          rawContent = rawContent.replace(/\[\[([\w-]+)\|([^\]]+)\]\]/g, (m, linkId, text) => {
-            return `<a href="article.html?id=${encodeURIComponent(linkId)}" class="inline-link">${text}</a>`;
-          });
-
-          const paragraphs = rawContent.split(/\n+/).filter(p => p.trim());
-
-          // ---- Auto-link the source outlet's name (e.g. "BBC") to the
-          // original story, first mention only, so it doesn't feel spammy. ----
-          if (article.sourceName && article.sourceUrl) {
-            const escaped = article.sourceName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const sourceRegex = new RegExp(`\\b(${escaped})\\b`, 'i');
-            let linked = false;
-            for (let i = 0; i < paragraphs.length; i++) {
-              if (linked) break;
-              if (sourceRegex.test(paragraphs[i])) {
-                paragraphs[i] = paragraphs[i].replace(sourceRegex,
-                  `<a href="${article.sourceUrl}" target="_blank" rel="noopener noreferrer" class="source-link">$1</a>`);
-                linked = true;
-              }
-            }
-          }
-
-          // Interleave any inline images roughly evenly through the body,
-          // the way a real publication breaks up long text — not just one
-          // image at the top. Skips gracefully if the article has none.
-          const inlineImages = (article.images || []).filter(img => img && img.url);
-          const parts = paragraphs.map(p => `<p>${p.trim()}</p>`);
-
-          if (inlineImages.length && paragraphs.length > 3) {
-            const slot = Math.floor(parts.length / (inlineImages.length + 1));
-            inlineImages.forEach((img, i) => {
-              const insertAt = slot * (i + 1) + i; // account for prior insertions shifting index
-              const imgHtml = `<img src="${img.url}" alt="${img.alt || article.title}" loading="lazy">` +
-                (img.credit ? `<div class="img-caption">${img.credit}</div>` : (img.alt ? `<div class="img-caption">${img.alt}</div>` : ''));
-              parts.splice(Math.min(insertAt, parts.length), 0, imgHtml);
-            });
-          }
-
-          bodyHtml = parts.join('');
-        }
-
-        // ---- Related articles: same category (and shared tags if present),
-        // most recent first, excluding the current article. ----
-        const sameCategory = visible.filter(a => a.id !== article.id && a.category === article.category);
-        const articleTags = article.tags || [];
-        const scored = sameCategory.map(a => {
-          const sharedTags = (a.tags || []).filter(t => articleTags.includes(t)).length;
-          return { a, score: sharedTags };
-        }).sort((x, y) => y.score - x.score || new Date(y.a.date) - new Date(x.a.date));
-        const related = scored.slice(0, 3).map(s => s.a);
-
-        const relatedHtml = related.length ? `
-          <div class="related-section">
-            <h3>Related in ${categoryLabel}</h3>
-            <div class="related-list">
-              ${related.map(r => `
-                <a href="article.html?id=${encodeURIComponent(r.id)}" class="related-row">
-                  <div class="thumb">${r.image ? `<img src="${r.image}" alt="${r.title}" loading="lazy">` : ''}</div>
-                  <div>
-                    <span class="cat">${categoryMap[r.category] || r.category}</span>
-                    <h4>${r.title}</h4>
-                  </div>
-                </a>
-              `).join('')}
-            </div>
-          </div>
-        ` : '';
-
-        // ---- Next article: chronologically the next-older story overall,
-        // so readers can keep moving through the whole feed, not just one
-        // category. Wraps to the most recent article at the end of the list. ----
-        const chronological = [...visible].sort((a, b) => new Date(b.date) - new Date(a.date));
-        const curIdx = chronological.findIndex(a => a.id === article.id);
-        const nextArticle = chronological.length > 1
-          ? chronological[(curIdx + 1) % chronological.length]
-          : null;
-
-        const nextHtml = nextArticle ? `
-          <a href="article.html?id=${encodeURIComponent(nextArticle.id)}" class="next-article">
-            <div class="label">Next Article →</div>
-            <h4>${nextArticle.title}</h4>
-          </a>
-        ` : '';
-
-        root.innerHTML = `
-          <a href="javascript:history.back()" class="back-link">← Back</a>
-          <div class="category-tag">${categoryLabel}</div>
-          <h1>${article.title}</h1>
-          <div class="meta">
-            <span>${dateStr}</span>
-            <span>·</span>
-            <span>By ${article.author}</span>
-          </div>
-          ${article.image ? `
-            <img class="hero-image" src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">
-            ${article.imageCredit ? `<div class="hero-image-credit">${article.imageCredit}</div>` : ''}
-          ` : ''}
-          <div class="content">
-            ${bodyHtml || `<p>${article.summary}</p>`}
-          </div>
-          ${nextHtml}
-          ${relatedHtml}
-        `;
-      } catch (err) {
-        console.error(err);
-        root.innerHTML = '<p class="error">Failed to load article.</p>';
-      }
-    })();
-  </script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>
