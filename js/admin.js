@@ -198,7 +198,7 @@
 
   // ---- Tabs ----
 
-  tabsEl.addEventListener('click', (e) => {
+  if (tabsEl) tabsEl.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-tab]');
     if (!btn) return;
     tabsEl.querySelectorAll('button').forEach(b => b.classList.remove('active'));
@@ -336,8 +336,8 @@
       subs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
   }
 
-  fCategory.addEventListener('change', () => populateSubcategorySelect(fCategory.value));
-  fStatus.addEventListener('change', () => {
+  if (fCategory) fCategory.addEventListener('change', () => populateSubcategorySelect(fCategory.value));
+  if (fStatus) fStatus.addEventListener('change', () => {
     fScheduledWrap.style.display = fStatus.value === 'scheduled' ? 'block' : 'none';
   });
 
@@ -375,7 +375,7 @@
     }).join('');
   }
 
-  listEl.addEventListener('click', (e) => {
+  if (listEl) listEl.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
     const id = btn.dataset.id;
@@ -447,12 +447,12 @@
     }
   }
 
-  cancelBtn.addEventListener('click', () => {
+  if (cancelBtn) cancelBtn.addEventListener('click', () => {
     editPanel.classList.remove('open');
     editingId = null;
   });
 
-  saveBtn.addEventListener('click', async () => {
+  if (saveBtn) saveBtn.addEventListener('click', async () => {
     if (!editingId) return;
     const title = fTitle.value.trim();
     if (!title) { showMsg('Title is required.', 'error'); return; }
@@ -572,7 +572,7 @@
     `).join('');
   }
 
-  catListEl.addEventListener('click', (e) => {
+  if (catListEl) catListEl.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-cat-action]');
     if (!btn) return;
     const id = btn.dataset.id;
@@ -597,7 +597,7 @@
     catEditPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  newCatBtn.addEventListener('click', () => {
+  if (newCatBtn) newCatBtn.addEventListener('click', () => {
     editingCatId = 'NEW';
     catEditTitle.textContent = 'New Category';
     cName.value = ''; cId.value = ''; cDescription.value = ''; cImage.value = ''; cSubcategories.value = '';
@@ -606,12 +606,12 @@
     cName.focus();
   });
 
-  catCancelBtn.addEventListener('click', () => {
+  if (catCancelBtn) catCancelBtn.addEventListener('click', () => {
     catEditPanel.classList.remove('open');
     editingCatId = null;
   });
 
-  catSaveBtn.addEventListener('click', async () => {
+  if (catSaveBtn) catSaveBtn.addEventListener('click', async () => {
     const name = cName.value.trim();
     if (!name) { showMsg('Category name is required.', 'error'); return; }
 
@@ -705,7 +705,7 @@
     `).join('');
   }
 
-  pageListEl.addEventListener('click', (e) => {
+  if (pageListEl) pageListEl.addEventListener('click', (e) => {
     const btn = e.target.closest('button[data-page-action]');
     if (!btn) return;
     const id = btn.dataset.id;
@@ -726,7 +726,7 @@
     pageEditPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  newPageBtn.addEventListener('click', () => {
+  if (newPageBtn) newPageBtn.addEventListener('click', () => {
     editingPageId = 'NEW';
     pageEditTitle.textContent = 'New Page';
     pTitle.value = ''; pId.value = ''; pContent.value = '';
@@ -735,12 +735,12 @@
     pTitle.focus();
   });
 
-  pageCancelBtn.addEventListener('click', () => {
+  if (pageCancelBtn) pageCancelBtn.addEventListener('click', () => {
     pageEditPanel.classList.remove('open');
     editingPageId = null;
   });
 
-  pageSaveBtn.addEventListener('click', async () => {
+  if (pageSaveBtn) pageSaveBtn.addEventListener('click', async () => {
     const title = pTitle.value.trim();
     if (!title) { showMsg('Page title is required.', 'error'); return; }
     const id = slugify(pId.value.trim() || title);
@@ -794,7 +794,7 @@
     sMaintenanceMsg.value = settings.maintenanceMessage || '';
   }
 
-  settingsSaveBtn.addEventListener('click', async () => {
+  if (settingsSaveBtn) settingsSaveBtn.addEventListener('click', async () => {
     settingsSaveBtn.disabled = true;
     settingsSaveBtn.textContent = 'Saving…';
     try {
@@ -867,8 +867,8 @@
     tokenInput.value = '';
   });
 
-  generateBtn.addEventListener('click', triggerGeneration);
-  newBtn.addEventListener('click', openNew);
+  if (generateBtn) generateBtn.addEventListener('click', triggerGeneration);
+  if (newBtn) newBtn.addEventListener('click', openNew);
 
   document.addEventListener('DOMContentLoaded', () => {
     if (getToken()) connect();
