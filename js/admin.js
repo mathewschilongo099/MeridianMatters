@@ -274,23 +274,49 @@
       await loadArticles();
       loginSection.style.display = 'none';
       dashboardSection.style.display = 'block';
+      logoutBtn.style.display = 'inline-flex';
       renderList();
     } catch (err) {
-      showMsg(err.message, 'error');
+      // Give a clearer message for the offline case specifically, since
+      // a bare "Failed to fetch" isn't obvious to a user staring at a
+      // button that looks like it did nothing.
+      if (err instanceof TypeError && !navigator.onLine) {
+        showMsg('You appear to be offline. Connect to the internet and try again.', 'error');
+      } else {
+        showMsg(err.message, 'error');
+      }
       localStorage.removeItem(TOKEN_KEY);
+      throw err;
     }
   }
 
-  loginBtn.addEventListener('click', () => {
+  loginBtn.addEventListener('click', async () => {
     const token = tokenInput.value.trim();
-    if (!token) return;
+    if (!token) {
+      showMsg('Enter a token first.', 'error');
+      return;
+    }
     localStorage.setItem(TOKEN_KEY, token);
-    connect();
+
+    // Without this, clicking Connect while offline (or during any slow/
+    // failed request) gave no visible feedback at all — the button just
+    // sat there looking unresponsive until the fetch eventually rejected.
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Connecting…';
+    try {
+      await connect();
+    } catch {
+      // error already shown by connect()
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Connect';
+    }
   });
 
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem(TOKEN_KEY);
     dashboardSection.style.display = 'none';
+    logoutBtn.style.display = 'none';
     loginSection.style.display = 'block';
     tokenInput.value = '';
   });
@@ -299,7 +325,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     if (getToken()) {
-      connect();
+      connect().catch(() => {});
     }
   });
 })();
