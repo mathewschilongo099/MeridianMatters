@@ -26,15 +26,6 @@
             "value": "max-age=300"
           }
         ]
-      },
-      {
-        "source": "/sitemap-google.xml",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/xml"
-          }
-        ]
       }
     ]
   }
