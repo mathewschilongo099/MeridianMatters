@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://meridianmatters.web.app/sitemap.xml
+Sitemap: https://meridianmatters.web.app/sitemap-google.xml
