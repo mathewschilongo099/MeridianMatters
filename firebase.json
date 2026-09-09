@@ -12,13 +12,28 @@
       {
         "source": "**/*.js",
         "headers": [
-          { "key": "Cache-Control", "value": "max-age=300" }
+          {
+            "key": "Cache-Control",
+            "value": "max-age=300"
+          }
         ]
       },
       {
         "source": "**/*.css",
         "headers": [
-          { "key": "Cache-Control", "value": "max-age=300" }
+          {
+            "key": "Cache-Control",
+            "value": "max-age=300"
+          }
+        ]
+      },
+      {
+        "source": "/sitemap-google.xml",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/xml"
+          }
         ]
       }
     ]
