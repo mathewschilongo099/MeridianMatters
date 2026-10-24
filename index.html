@@ -5,14 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MeridianMatters – Global News, Sports, Health & Finance</title>
   <meta name="description" content="Stay informed with the latest in global news, sports, health, and finance. Powered by MeridianMatters.">
+  <meta name="theme-color" content="#14181c">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MeridianMatters">
+  <meta property="og:title" content="MeridianMatters – Global News, Sports, Health & Finance">
+  <meta property="og:description" content="Stay informed with the latest in global news, sports, health, and finance.">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2314181c'/%3E%3Cpath d='M7 24V8h3l6 9 6-9h3v16h-3V13l-6 9-6-9v11z' fill='%230ea5e9'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <header class="site-header">
     <div class="container nav-inner">
       <a href="index.html" class="logo">Meridian<span>Matters</span></a>
       <nav class="nav-links" id="nav-links" aria-label="Main navigation">
-        <a href="index.html" class="active">Home</a>
+        <a href="index.html" class="active" aria-current="page">Home</a>
         <a href="news.html">Global News</a>
         <a href="sports.html">Sports</a>
         <a href="health.html">Health</a>
@@ -28,29 +40,67 @@
       </div>
     </div>
   </header>
-  <div class="wire-ticker" id="wire-ticker"></div>
+  <div class="wire-ticker" id="wire-ticker" aria-label="Live headlines"></div>
 
-  <main>
-    <!-- Lead story: shows first, wire-style, no big gradient hero -->
-    <section class="hero">
-      <div class="container hero-content">
-        <span class="hero-badge">Breaking</span>
-        <a href="index.html" id="hero-link" style="text-decoration:none; color:inherit; display:block;">
-          <h1 id="hero-title">Loading latest story…</h1>
-          <p id="hero-summary"></p>
-        </a>
-        <div class="hero-meta" id="hero-meta"></div>
+  <main id="main">
+    <!-- Lead story + Top Stories rail -->
+    <section class="hero" aria-label="Top stories">
+      <div class="container hero-grid">
+        <article class="hero-lead" id="hero-lead" aria-live="polite">
+          <div class="skeleton sk-image"></div>
+          <div class="skeleton sk-line lg"></div>
+          <div class="skeleton sk-line w80"></div>
+        </article>
+        <aside class="hero-rail">
+          <h2 class="rail-title">Top Stories</h2>
+          <div class="rail-list" id="hero-rail">
+            <div class="skeleton sk-line lg"></div>
+            <div class="skeleton sk-line lg"></div>
+            <div class="skeleton sk-line lg"></div>
+          </div>
+        </aside>
       </div>
     </section>
 
     <div class="container">
-      <!-- Latest Stories: dense wire-feed list, right below the lead story -->
       <div class="section-header">
         <h2>Latest Stories</h2>
         <a href="news.html">View all →</a>
       </div>
       <div class="article-grid" id="latest-articles">
-        <p style="color: var(--text-muted); padding: 1rem 0;">Loading articles…</p>
+        <div class="sk-card" aria-hidden="true"><div class="skeleton sk-thumb"></div><div><div class="skeleton sk-line w60"></div><div class="skeleton sk-line lg"></div></div></div>
+        <div class="sk-card" aria-hidden="true"><div class="skeleton sk-thumb"></div><div><div class="skeleton sk-line w60"></div><div class="skeleton sk-line lg"></div></div></div>
+        <div class="sk-card" aria-hidden="true"><div class="skeleton sk-thumb"></div><div><div class="skeleton sk-line w60"></div><div class="skeleton sk-line lg"></div></div></div>
+      </div>
+
+      <div class="section-header">
+        <h2>Browse Sections</h2>
+      </div>
+      <div class="category-grid">
+        <a class="category-card" href="news.html">
+          <span class="category-num">01</span>
+          <h3>Global News</h3>
+          <p>Politics, world affairs and the stories shaping the day.</p>
+          <span class="link">Read news →</span>
+        </a>
+        <a class="category-card" href="sports.html">
+          <span class="category-num">02</span>
+          <h3>Sports</h3>
+          <p>Results, transfers and analysis from the games that matter.</p>
+          <span class="link">Read sports →</span>
+        </a>
+        <a class="category-card" href="health.html">
+          <span class="category-num">03</span>
+          <h3>Health</h3>
+          <p>Clear, practical reporting on wellbeing and medicine.</p>
+          <span class="link">Read health →</span>
+        </a>
+        <a class="category-card" href="finance.html">
+          <span class="category-num">04</span>
+          <h3>Finance</h3>
+          <p>Markets, money and the economy explained simply.</p>
+          <span class="link">Read finance →</span>
+        </a>
       </div>
     </div>
   </main>
@@ -69,12 +119,6 @@
             <a href="sports.html">Sports</a>
             <a href="health.html">Health</a>
             <a href="finance.html">Finance</a>
-          </div>
-          <div>
-            <h4>About</h4>
-            <a href="#">Our Mission</a>
-            <a href="#">Contact</a>
-            <a href="#">Privacy</a>
           </div>
         </div>
       </div>
