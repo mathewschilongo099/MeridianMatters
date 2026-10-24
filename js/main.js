@@ -1,10 +1,46 @@
-// Theme toggle + mobile menu + dynamic articles + wire ticker
+// MeridianMatters — theme, nav, search, dynamic articles, wire ticker, UX polish
 (function () {
   const html = document.documentElement;
   const themeToggle = document.getElementById('theme-toggle');
   const menuToggle = document.getElementById('menu-toggle');
   const navLinks = document.getElementById('nav-links');
+  const isAdmin = window.location.pathname.includes('admin');
 
+  // ===== Helpers =====
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+
+  const categoryMap = {
+    news: 'Global News',
+    sports: 'Sports',
+    health: 'Health',
+    finance: 'Finance'
+  };
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    const diff = Date.now() - d.getTime();
+    const hours = Math.floor(diff / 3600000);
+    if (diff >= 0 && hours < 1) return 'Just now';
+    if (diff >= 0 && hours < 24) return hours + 'h ago';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function readingTime(article) {
+    const text = article.content || '';
+    if (!text) return '';
+    const words = text.trim().split(/\s+/).length;
+    return Math.max(1, Math.round(words / 220)) + ' min read';
+  }
+
+  function metaLine(a) {
+    const parts = [formatDate(a.date), a.author ? 'By ' + esc(a.author) : '', readingTime(a)].filter(Boolean);
+    return parts.map((p) => `<span>${p}</span>`).join('<span>·</span>');
+  }
+
+  // ===== Theme =====
   const saved = localStorage.getItem('theme');
   if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     html.setAttribute('data-theme', 'dark');
@@ -36,12 +72,13 @@
     });
   }
 
+  // ===== Mobile menu =====
   if (menuToggle && navLinks) {
     menuToggle.addEventListener('click', () => {
       navLinks.classList.toggle('open');
       menuToggle.setAttribute('aria-expanded', navLinks.classList.contains('open'));
     });
-    navLinks.querySelectorAll('a').forEach(link => {
+    navLinks.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
         navLinks.classList.remove('open');
         menuToggle.setAttribute('aria-expanded', 'false');
@@ -49,64 +86,72 @@
     });
   }
 
-  // ===== Dynamic Articles =====
-  const categoryMap = {
-    news: 'Global News',
-    sports: 'Sports',
-    health: 'Health',
-    finance: 'Finance'
-  };
-
-  function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  // ===== Active nav =====
+  function setActiveNav(key) {
+    document.querySelectorAll('.nav-links a').forEach((a) => {
+      const href = (a.getAttribute('href') || '').replace('.html', '');
+      const k = href === 'index' ? 'home' : href;
+      const on = k === key;
+      a.classList.toggle('active', on);
+      if (on) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
   }
 
-  // Wire-style timestamp, e.g. "14:32 UTC"
-  function formatWireTime(dateStr) {
-    const d = new Date(dateStr);
-    if (isNaN(d)) return '';
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC' }) + ' UTC';
+  function pageKey() {
+    const path = window.location.pathname;
+    if (path.includes('news')) return 'news';
+    if (path.includes('sports')) return 'sports';
+    if (path.includes('health')) return 'health';
+    if (path.includes('finance')) return 'finance';
+    if (path.includes('article') || path.includes('page') || path.includes('admin')) return null;
+    return 'home';
   }
 
+  // ===== Data loading =====
   function createArticleCard(article) {
     const categoryLabel = categoryMap[article.category] || article.category;
     const imageContent = article.image
-      ? `<img src="${article.image}" alt="${article.imageAlt || article.title}" loading="lazy">`
-      : (article.imageAlt || categoryLabel);
+      ? `<img src="${esc(article.image)}" alt="${esc(article.imageAlt || article.title)}" loading="lazy" decoding="async">`
+      : esc(article.imageAlt || categoryLabel);
 
     return `
-      <a href="article.html?id=${encodeURIComponent(article.id)}" class="article-card" data-id="${article.id}">
+      <a href="article.html?id=${encodeURIComponent(article.id)}" class="article-card" data-id="${esc(article.id)}">
         <div class="article-image">${imageContent}</div>
         <div class="article-body">
-          <span class="article-category">${categoryLabel}</span>
-          <h3>${article.title}</h3>
-          <p>${article.summary}</p>
-          <div class="article-meta">
-            <span>${formatDate(article.date)}</span>
-            <span>·</span>
-            <span>By ${article.author}</span>
-          </div>
+          <span class="article-category">${esc(categoryLabel)}</span>
+          <h3>${esc(article.title)}</h3>
+          <p>${esc(article.summary)}</p>
+          <div class="article-meta">${metaLine(article)}</div>
         </div>
       </a>
     `;
   }
 
-  // Cache the articles fetch so the ticker, hero, and article list (which
-  // all load on the homepage) share one network request instead of each
-  // firing its own — matters most on slow connections.
+  function skeletonCards(n) {
+    return Array.from({ length: n }, () => `
+      <div class="sk-card" aria-hidden="true">
+        <div class="skeleton sk-thumb"></div>
+        <div><div class="skeleton sk-line w60"></div><div class="skeleton sk-line lg"></div><div class="skeleton sk-line w80"></div></div>
+      </div>`).join('');
+  }
+
+  // Cache the articles fetch so ticker, hero, list and search share one request.
+  // 'no-cache' revalidates with the server (ETag) so new posts show immediately
+  // without defeating the CDN cache the way a timestamp query string does.
   let articlesPromise = null;
 
   async function loadArticles() {
     if (articlesPromise) return articlesPromise;
     articlesPromise = (async () => {
       try {
-        const res = await fetch('data/articles.json?t=' + Date.now());
+        const res = await fetch('data/articles.json', { cache: 'no-cache' });
         if (!res.ok) throw new Error('Failed to load');
         const data = await res.json();
         const all = data.articles || [];
 
         const now = new Date();
-        return all.filter(a => {
+        return all.filter((a) => {
           const status = a.status || 'published';
           if (status === 'published') return true;
           if (status === 'scheduled') {
@@ -125,7 +170,7 @@
 
   async function loadSettings() {
     try {
-      const res = await fetch('data/settings.json?t=' + Date.now());
+      const res = await fetch('data/settings.json', { cache: 'no-cache' });
       if (!res.ok) return null;
       return await res.json();
     } catch {
@@ -141,85 +186,94 @@
       document.documentElement.style.setProperty('--accent', settings.accentColor);
     }
     if (settings.siteName && settings.siteName !== 'MeridianMatters') {
-      document.querySelectorAll('.logo').forEach(el => {
-        // Keep the two-tone styling but swap the text content safely.
+      document.querySelectorAll('.logo').forEach((el) => {
         const mid = Math.ceil(settings.siteName.length / 2);
-        el.innerHTML = `${settings.siteName.slice(0, mid)}<span>${settings.siteName.slice(mid)}</span>`;
+        el.innerHTML = `${esc(settings.siteName.slice(0, mid))}<span>${esc(settings.siteName.slice(mid))}</span>`;
       });
     }
 
-    if (settings.maintenanceMode && !window.location.pathname.includes('admin')) {
+    if (settings.maintenanceMode && !isAdmin) {
       document.body.innerHTML = `
         <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:2rem; font-family: var(--font-body, sans-serif);">
           <div>
             <h1 style="font-family: var(--font-display, sans-serif); font-size:1.8rem; margin-bottom:1rem;">We'll be right back</h1>
-            <p style="color:#5b6470;">${settings.maintenanceMessage || 'The site is temporarily down for maintenance.'}</p>
+            <p style="color:#5b6470;">${esc(settings.maintenanceMessage || 'The site is temporarily down for maintenance.')}</p>
           </div>
         </div>
       `;
-      throw new Error('maintenance-mode'); // halt further rendering on this page
+      throw new Error('maintenance-mode');
     }
   }
 
-  async function renderHomeArticles() {
-    const container = document.getElementById('latest-articles');
-    if (!container) return;
+  // ===== Home =====
+  async function renderHome() {
+    const lead = document.getElementById('hero-lead');
+    const rail = document.getElementById('hero-rail');
+    const list = document.getElementById('latest-articles');
+    if (!lead && !rail && !list) return;
+
     const articles = await loadArticles();
+    const sorted = [...articles].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const featured = articles.find((a) => a.featured) || sorted[0];
 
-    // The lead story already appears in the hero above — skip it here so
-    // it isn't repeated, then show a denser list since each row is compact.
-    const lead = articles.find(a => a.featured) || articles[0];
-    const rest = articles
-      .filter(a => a !== lead)
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, 8);
+    if (!featured) {
+      if (lead) lead.innerHTML = '<p class="empty-state">No stories published yet. Check back soon.</p>';
+      if (rail) rail.innerHTML = '';
+      if (list) list.innerHTML = '<p class="empty-state">No articles yet.</p>';
+      return;
+    }
 
-    container.innerHTML = rest.length
-      ? rest.map(createArticleCard).join('')
-      : '<p style="color:var(--text-muted);padding:1rem 0;">No articles yet.</p>';
+    const others = sorted.filter((a) => a !== featured);
+    const railItems = others.slice(0, 4);
+    const listItems = others.slice(4, 12);
+
+    if (lead) {
+      const label = categoryMap[featured.category] || featured.category;
+      lead.innerHTML = `
+        <span class="hero-badge">${esc(label)}</span>
+        <a href="article.html?id=${encodeURIComponent(featured.id)}">
+          ${featured.image ? `<div class="hero-image"><img src="${esc(featured.image)}" alt="${esc(featured.imageAlt || featured.title)}" fetchpriority="high" decoding="async"></div>` : ''}
+          <h1>${esc(featured.title)}</h1>
+          <p>${esc(featured.summary)}</p>
+        </a>
+        <div class="hero-meta">${metaLine(featured)}</div>
+      `;
+    }
+
+    if (rail) {
+      rail.innerHTML = railItems.length
+        ? railItems.map((a) => `
+          <a class="rail-item" href="article.html?id=${encodeURIComponent(a.id)}">
+            <div>
+              <span class="article-category">${esc(categoryMap[a.category] || a.category)}</span>
+              <h3>${esc(a.title)}</h3>
+              <div class="article-meta">${metaLine(a)}</div>
+            </div>
+          </a>`).join('')
+        : '<p class="empty-state">More stories coming soon.</p>';
+    }
+
+    if (list) {
+      list.innerHTML = listItems.length
+        ? listItems.map(createArticleCard).join('')
+        : '<p class="empty-state">More stories coming soon.</p>';
+    }
   }
 
   async function renderCategoryArticles(category) {
     const container = document.getElementById('category-articles');
     if (!container) return;
+    container.innerHTML = skeletonCards(5);
     const articles = await loadArticles();
     const filtered = articles
-      .filter(a => a.category === category)
+      .filter((a) => a.category === category)
       .sort((a, b) => new Date(b.date) - new Date(a.date));
     container.innerHTML = filtered.length
       ? filtered.map(createArticleCard).join('')
-      : '<p style="color:var(--text-muted);padding:1rem 0;">No articles yet in this category.</p>';
+      : '<p class="empty-state">No articles yet in this category.</p>';
   }
 
-  async function renderHero() {
-    const heroTitle = document.getElementById('hero-title');
-    const heroSummary = document.getElementById('hero-summary');
-    const heroMeta = document.getElementById('hero-meta');
-    const heroLink = document.getElementById('hero-link');
-    if (!heroTitle) return;
-
-    const articles = await loadArticles();
-    const featured = articles.find(a => a.featured) || articles[0];
-    if (!featured) return;
-
-    heroTitle.textContent = featured.title;
-    if (heroSummary) heroSummary.textContent = featured.summary;
-    if (heroLink) heroLink.href = `article.html?id=${encodeURIComponent(featured.id)}`;
-    if (heroMeta) {
-      heroMeta.innerHTML = `
-        <span>${formatDate(featured.date)}</span>
-        <span>·</span>
-        <span>By ${featured.author}</span>
-        <span>·</span>
-        <span>${categoryMap[featured.category] || featured.category}</span>
-      `;
-    }
-  }
-
-  // ===== Wire Ticker (signature element) =====
-  // Expects a container: <div class="wire-ticker" id="wire-ticker"></div>
-  // placed right after the <header>. Builds itself from the same
-  // articles.json the rest of the page uses — no extra data source needed.
+  // ===== Wire Ticker =====
   async function renderTicker() {
     const el = document.getElementById('wire-ticker');
     if (!el) return;
@@ -231,13 +285,12 @@
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, 8);
 
-    const items = latest.map(a => {
-      const label = (categoryMap[a.category] || a.category).toUpperCase();
-      return `<a href="article.html?id=${encodeURIComponent(a.id)}">${label} — ${a.title}</a>`;
+    const items = latest.map((a) => {
+      const label = (categoryMap[a.category] || a.category || '').toUpperCase();
+      return `<a href="article.html?id=${encodeURIComponent(a.id)}">${esc(label)} — ${esc(a.title)}</a>`;
     });
 
-    // Duplicate the list back-to-back so the CSS marquee (-50% translateX)
-    // loops seamlessly with no visible seam or restart jump.
+    // Duplicate back-to-back so the -50% marquee loops without a seam.
     const track = items.concat(items).join('<span class="sep">&nbsp;&nbsp;//&nbsp;&nbsp;</span>');
 
     el.innerHTML = `
@@ -247,13 +300,12 @@
   }
 
   // ===== Pages (About / Contact / Privacy / custom) =====
-  // Loaded once and reused by both the header "more" menu and the footer.
   let pagesPromise = null;
   async function loadPages() {
     if (pagesPromise) return pagesPromise;
     pagesPromise = (async () => {
       try {
-        const res = await fetch('data/pages.json?t=' + Date.now());
+        const res = await fetch('data/pages.json', { cache: 'no-cache' });
         if (!res.ok) return [];
         const data = await res.json();
         return (data.pages || []).sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -264,14 +316,10 @@
     return pagesPromise;
   }
 
-  // Injects a "⋯" button at the top-left of the header (before the logo)
-  // on every page, with a dropdown listing About/Contact/Privacy/custom
-  // pages. Built in JS so it appears everywhere without editing each HTML
-  // file by hand.
   async function renderMoreMenu() {
-    if (window.location.pathname.includes('admin')) return; // admin panel keeps its own minimal header
+    if (isAdmin) return;
     const navInner = document.querySelector('.site-header .nav-inner');
-    if (!navInner || document.getElementById('more-toggle')) return; // already injected or no header
+    if (!navInner || document.getElementById('more-toggle')) return;
 
     const pages = await loadPages();
     if (!pages.length) return;
@@ -285,7 +333,7 @@
         </svg>
       </button>
       <div class="more-menu" id="more-menu">
-        ${pages.map(p => `<a href="page.html?slug=${encodeURIComponent(p.id)}">${p.title}</a>`).join('')}
+        ${pages.map((p) => `<a href="page.html?slug=${encodeURIComponent(p.id)}">${esc(p.title)}</a>`).join('')}
       </div>
     `;
     navInner.insertBefore(wrap, navInner.firstChild);
@@ -305,16 +353,12 @@
     });
   }
 
-  // Removes the old hardcoded "About" footer column (dead "#" links) if
-  // present on this page, and replaces it with real links built from the
-  // same pages data — so the footer and the header menu never drift apart.
   async function fixFooterLinks() {
     const footerLinksContainer = document.querySelector('.footer-links');
     if (!footerLinksContainer) return;
 
-    // Keep only the first column (Sections); drop any legacy second column.
-    const columns = footerLinksContainer.querySelectorAll(':scope > div');
-    columns.forEach((col, i) => { if (i > 0) col.remove(); });
+    // Keep only the Sections column; drop any legacy dead-link column.
+    footerLinksContainer.querySelectorAll(':scope > div').forEach((col, i) => { if (i > 0) col.remove(); });
 
     const pages = await loadPages();
     if (!pages.length) return;
@@ -322,40 +366,165 @@
     const aboutCol = document.createElement('div');
     aboutCol.innerHTML = `
       <h4>About</h4>
-      ${pages.map(p => `<a href="page.html?slug=${encodeURIComponent(p.id)}">${p.title}</a>`).join('')}
+      ${pages.map((p) => `<a href="page.html?slug=${encodeURIComponent(p.id)}">${esc(p.title)}</a>`).join('')}
     `;
     footerLinksContainer.appendChild(aboutCol);
   }
 
+  function setFooterYear() {
+    const el = document.querySelector('.footer-bottom');
+    if (el) el.textContent = `© ${new Date().getFullYear()} MeridianMatters. All rights reserved.`;
+  }
+
+  // ===== Search =====
+  function initSearch() {
+    if (isAdmin) return;
+    const actions = document.querySelector('.nav-actions');
+    if (!actions) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'search-toggle';
+    btn.setAttribute('aria-label', 'Search stories');
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>`;
+    actions.insertBefore(btn, actions.firstChild);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'search-overlay';
+    overlay.hidden = true;
+    overlay.innerHTML = `
+      <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search stories">
+        <div class="search-field">
+          <input type="search" id="search-input" placeholder="Search stories…" autocomplete="off" aria-label="Search stories">
+          <button type="button" class="search-close" aria-label="Close search">Esc</button>
+        </div>
+        <div class="search-results" id="search-results"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const input = overlay.querySelector('#search-input');
+    const results = overlay.querySelector('#search-results');
+
+    function row(a) {
+      return `<a class="search-item" href="article.html?id=${encodeURIComponent(a.id)}">
+        <span class="article-category">${esc(categoryMap[a.category] || a.category)}</span>
+        <h4>${esc(a.title)}</h4>
+        <div class="article-meta">${metaLine(a)}</div>
+      </a>`;
+    }
+
+    async function render(q) {
+      const articles = await loadArticles();
+      const sorted = [...articles].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+
+      if (!terms.length) {
+        results.innerHTML = `<div class="search-hint">Latest stories</div>${sorted.slice(0, 5).map(row).join('')}`;
+        return;
+      }
+
+      const hits = sorted.filter((a) => {
+        const hay = [a.title, a.summary, a.author, categoryMap[a.category] || a.category].join(' ').toLowerCase();
+        return terms.every((t) => hay.includes(t));
+      }).slice(0, 8);
+
+      results.innerHTML = hits.length
+        ? `<div class="search-hint">${hits.length} result${hits.length === 1 ? '' : 's'}</div>${hits.map(row).join('')}`
+        : `<div class="empty-state" style="padding:1.25rem 1rem;">No stories match “${esc(q)}”.</div>`;
+    }
+
+    let lastFocus = null;
+    function open() {
+      lastFocus = document.activeElement;
+      overlay.hidden = false;
+      document.body.style.overflow = 'hidden';
+      input.value = '';
+      render('');
+      input.focus();
+    }
+    function close() {
+      overlay.hidden = true;
+      document.body.style.overflow = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    btn.addEventListener('click', open);
+    overlay.querySelector('.search-close').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    input.addEventListener('input', () => render(input.value));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !overlay.hidden) close();
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (e.key === '/' && overlay.hidden && !/INPUT|TEXTAREA|SELECT/.test(tag)) {
+        e.preventDefault();
+        open();
+      }
+    });
+  }
+
+  // ===== Scroll UX: header shadow, back-to-top, reading progress =====
+  function initScrollUX() {
+    const header = document.querySelector('.site-header');
+    const progress = document.getElementById('read-progress');
+
+    let toTop = null;
+    if (!isAdmin) {
+      toTop = document.createElement('button');
+      toTop.className = 'to-top';
+      toTop.setAttribute('aria-label', 'Back to top');
+      toTop.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>`;
+      toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      document.body.appendChild(toTop);
+    }
+
+    let ticking = false;
+    function onScroll() {
+      const y = window.scrollY || document.documentElement.scrollTop;
+      if (header) header.classList.toggle('scrolled', y > 8);
+      if (toTop) toTop.classList.toggle('show', y > 600);
+      if (progress) {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = (max > 0 ? Math.min(100, (y / max) * 100) : 0) + '%';
+      }
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
+    onScroll();
+  }
+
+  // ===== Boot =====
   document.addEventListener('DOMContentLoaded', async () => {
     try {
       await applySettings();
     } catch (err) {
-      if (err.message === 'maintenance-mode') return; // page replaced, stop here
+      if (err.message === 'maintenance-mode') return;
     }
+
+    const key = pageKey();
+    if (key) setActiveNav(key);
 
     renderTicker();
     renderMoreMenu();
     fixFooterLinks();
+    setFooterYear();
+    initSearch();
+    initScrollUX();
 
-    const path = window.location.pathname;
-    if (path.endsWith('index.html') || path.endsWith('/') || path === '') {
-      renderHero();
-      renderHomeArticles();
-    } else if (path.includes('news')) {
-      renderCategoryArticles('news');
-    } else if (path.includes('sports')) {
-      renderCategoryArticles('sports');
-    } else if (path.includes('health')) {
-      renderCategoryArticles('health');
-    } else if (path.includes('finance')) {
-      renderCategoryArticles('finance');
+    if (key === 'home') {
+      renderHome();
+    } else if (key) {
+      renderCategoryArticles(key);
     }
   });
 
-  // Expose the cached loader so other inline scripts (e.g. article.html)
-  // can reuse the same in-flight/completed fetch instead of downloading
-  // articles.json a second time.
+  // Shared with inline scripts (article.html) so data is fetched only once.
   window.MM = window.MM || {};
   window.MM.loadArticles = loadArticles;
+  window.MM.createArticleCard = createArticleCard;
+  window.MM.setActiveNav = setActiveNav;
+  window.MM.esc = esc;
+  window.MM.categoryMap = categoryMap;
+  window.MM.formatDate = formatDate;
+  window.MM.readingTime = readingTime;
 })();

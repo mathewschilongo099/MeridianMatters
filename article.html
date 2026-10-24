@@ -5,34 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title id="page-title">Article – MeridianMatters</title>
   <meta name="description" id="page-description" content="Stay informed with the latest in global news, sports, health, and finance. Powered by MeridianMatters.">
+  <meta name="theme-color" content="#14181c">
+  <meta property="og:type" content="article" id="og-type">
+  <meta property="og:site_name" content="MeridianMatters">
+  <meta property="og:title" id="og-title" content="MeridianMatters">
+  <meta property="og:description" id="og-description" content="">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2314181c'/%3E%3Cpath d='M7 24V8h3l6 9 6-9h3v16h-3V13l-6 9-6-9v11z' fill='%230ea5e9'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark')}catch(e){}</script>
   <link rel="stylesheet" href="css/styles.css">
-  <style>
-    .article-wrap { max-width: 760px; margin: 0 auto; padding: 2rem 0 4rem; }
-    .article-wrap .article-category {
-      font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent);
-      text-transform: uppercase; letter-spacing: 0.05em;
-    }
-    .article-wrap h1 {
-      font-family: var(--font-display); font-size: 2rem; font-weight: 800;
-      line-height: 1.2; margin: 0.5rem 0 0.75rem;
-    }
-    .article-wrap .article-meta {
-      font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);
-      margin-bottom: 1.5rem;
-    }
-    .article-wrap .article-hero-image {
-      width: 100%; max-height: 420px; object-fit: cover; margin-bottom: 1.5rem;
-    }
-    .article-wrap .article-body { font-size: 1.05rem; line-height: 1.7; }
-    .article-wrap .article-body p { margin-bottom: 1.1rem; }
-    .article-wrap .not-found { padding: 3rem 0; text-align: center; color: var(--text-muted); }
-    .article-wrap .back-link {
-      display: inline-block; margin-top: 2rem; font-family: var(--font-mono);
-      font-size: 0.8rem; color: var(--accent); text-decoration: none;
-    }
-  </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="read-progress" id="read-progress" aria-hidden="true"></div>
+
   <header class="site-header">
     <div class="container nav-inner">
       <a href="index.html" class="logo">Meridian<span>Matters</span></a>
@@ -53,11 +41,19 @@
       </div>
     </div>
   </header>
-  <div class="wire-ticker" id="wire-ticker"></div>
+  <div class="wire-ticker" id="wire-ticker" aria-label="Live headlines"></div>
 
-  <main>
-    <div class="container article-wrap" id="article-content">
-      <p style="color: var(--text-muted);">Loading article…</p>
+  <main id="main">
+    <div class="container">
+      <article class="article-wrap" id="article-content">
+        <div class="skeleton sk-line w60"></div>
+        <div class="skeleton sk-line lg"></div>
+        <div class="skeleton sk-image" style="margin-top:1rem;"></div>
+      </article>
+      <section class="related" id="related" hidden>
+        <div class="section-header"><h2>More in this section</h2></div>
+        <div class="article-grid" id="related-list"></div>
+      </section>
     </div>
   </main>
 
@@ -85,25 +81,20 @@
   <script src="js/main.js"></script>
   <script>
     (function () {
-      const categoryMap = { news: 'Global News', sports: 'Sports', health: 'Health', finance: 'Finance' };
+      const { esc, categoryMap, formatDate, readingTime } = window.MM;
 
-      function formatDate(dateStr) {
-        return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      }
-
-      // Article content in articles.json is plain text with blank-line
-      // separated paragraphs (matches the admin panel's "Full content"
-      // field help text) — split and wrap in <p> tags.
+      // Article content is plain text with blank-line separated paragraphs
+      // (matches the admin panel's "Full content" field) — escape, then wrap in <p>.
       function renderBody(content) {
         return (content || '')
           .split(/\n\s*\n/)
-          .map(p => `<p>${p.trim()}</p>`)
+          .filter((p) => p.trim())
+          .map((p) => `<p>${esc(p.trim()).replace(/\n/g, '<br>')}</p>`)
           .join('');
       }
 
       function showNotFound() {
-        const container = document.getElementById('article-content');
-        container.innerHTML = `
+        document.getElementById('article-content').innerHTML = `
           <div class="not-found">
             <h1>Article not found</h1>
             <p>This story may have been removed or the link is incorrect.</p>
@@ -112,46 +103,97 @@
         `;
       }
 
+      function setMeta(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('content', value || '');
+      }
+
+      function shareRow(article) {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(article.title);
+        return `
+          <div class="share-row">
+            <span class="label">Share</span>
+            <a class="share-btn" target="_blank" rel="noopener" href="https://wa.me/?text=${text}%20${url}">WhatsApp</a>
+            <a class="share-btn" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${url}">Facebook</a>
+            <a class="share-btn" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${text}&url=${url}">X</a>
+            <button class="share-btn" type="button" id="copy-link">Copy link</button>
+          </div>`;
+      }
+
       document.addEventListener('DOMContentLoaded', async () => {
         const container = document.getElementById('article-content');
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
+        const id = new URLSearchParams(window.location.search).get('id');
 
-        if (!id) {
-          showNotFound();
-          return;
-        }
-
-        if (!window.MM || typeof window.MM.loadArticles !== 'function') {
-          container.innerHTML = '<p style="color:var(--text-muted);">Could not load article data.</p>';
-          return;
-        }
+        if (!id) return showNotFound();
 
         const articles = await window.MM.loadArticles();
-        const article = articles.find(a => a.id === id);
-
-        if (!article) {
-          showNotFound();
-          return;
-        }
+        const article = articles.find((a) => a.id === id);
+        if (!article) return showNotFound();
 
         const categoryLabel = categoryMap[article.category] || article.category;
+        const fullTitle = `${article.title} – MeridianMatters`;
 
-        document.title = `${article.title} – MeridianMatters`;
-        document.getElementById('page-title').textContent = `${article.title} – MeridianMatters`;
-        const descEl = document.getElementById('page-description');
-        if (descEl) descEl.setAttribute('content', article.summary || '');
+        document.title = fullTitle;
+        document.getElementById('page-title').textContent = fullTitle;
+        setMeta('page-description', article.summary);
+        setMeta('og-title', article.title);
+        setMeta('og-description', article.summary);
+        window.MM.setActiveNav(article.category);
+
+        const meta = [formatDate(article.date), article.author ? 'By ' + esc(article.author) : '', readingTime(article)]
+          .filter(Boolean)
+          .map((p) => `<span>${p}</span>`)
+          .join('<span>·</span>');
 
         container.innerHTML = `
-          <span class="article-category">${categoryLabel}</span>
-          <h1>${article.title}</h1>
-          <div class="article-meta">
-            ${formatDate(article.date)} · By ${article.author || 'Unknown'}
-          </div>
-          ${article.image ? `<img class="article-hero-image" src="${article.image}" alt="${article.imageAlt || article.title}">` : ''}
+          <a class="article-category" href="${esc(article.category)}.html">${esc(categoryLabel)}</a>
+          <h1>${esc(article.title)}</h1>
+          ${article.summary ? `<p class="article-dek">${esc(article.summary)}</p>` : ''}
+          <div class="article-meta">${meta}</div>
+          ${article.image ? `<img class="article-hero-image" src="${esc(article.image)}" alt="${esc(article.imageAlt || article.title)}" decoding="async">` : ''}
           <div class="article-body">${renderBody(article.content)}</div>
+          ${shareRow(article)}
           <a class="back-link" href="index.html">← Back to homepage</a>
         `;
+
+        const copyBtn = document.getElementById('copy-link');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(window.location.href);
+              copyBtn.textContent = 'Copied ✓';
+            } catch {
+              copyBtn.textContent = 'Copy failed';
+            }
+            setTimeout(() => { copyBtn.textContent = 'Copy link'; }, 2000);
+          });
+        }
+
+        // Structured data for search engines
+        const ld = document.createElement('script');
+        ld.type = 'application/ld+json';
+        ld.textContent = JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'NewsArticle',
+          headline: article.title,
+          description: article.summary || '',
+          datePublished: article.date,
+          author: article.author ? { '@type': 'Person', name: article.author } : undefined,
+          image: article.image || undefined,
+          publisher: { '@type': 'Organization', name: 'MeridianMatters' }
+        });
+        document.head.appendChild(ld);
+
+        // Related stories from the same section
+        const related = articles
+          .filter((a) => a.category === article.category && a.id !== article.id)
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 3);
+        if (related.length) {
+          document.getElementById('related-list').innerHTML = related.map(window.MM.createArticleCard).join('');
+          document.getElementById('related').hidden = false;
+        }
       });
     })();
   </script>
