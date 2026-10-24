@@ -1,26 +1,37 @@
 /**
- * MeridianMatters - Automated Article Generator
- * Free stack: Groq + Google News RSS (for real grounding) + Unsplash + GitHub Actions
+ * MeridianMatters - Source-grounded article generator (v2)
  *
- * Key change from the previous version: articles are now written based on a
- * REAL current headline pulled from Google News RSS, not a vague made-up
- * "topic" prompt. Free-generating from a vague topic gave the model nothing
- * real to report on, so it invented fake events/quotes/statistics to fill
- * the word count. Grounding in a real headline fixes that at the source.
- *
- * Word count is now actually enforced with a retry loop, not just logged.
+ * What changed from v1:
+ *  - Articles are written from the REAL TEXT of a reputable outlet's article
+ *    (BBC, Guardian, NPR, Al Jazeera, ESPN, CBS Sports, CNBC), not from a
+ *    headline alone. Headline-only prompts forced the model to pad ~1000 words
+ *    with guesses, some of which were wrong.
+ *  - Deterministic fact gates run on every draft: numbers, direct quotes and
+ *    proper names must exist in the source, and the draft may not copy the
+ *    source's wording. Drafts that fail are retried, then dropped.
+ *  - Images: only a free-licence Wikimedia Commons photo whose file title or
+ *    description names the same person/place/organisation as the story.
+ *    No match = no photo (the site shows a neutral placeholder). The old
+ *    random keyword stock-photo search is gone; it produced wrong photos.
+ *  - Duplicate stories, live blogs, video pages, odds/betting and opinion
+ *    pieces are skipped.
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+const MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+const ARTICLES_PATH = path.join(__dirname, '..', 'data', 'articles.json');
+const UA = 'Mozilla/5.0 (compatible; MeridianMattersBot/2.0; +https://meridianmatters.web.app)';
 
-if (!GROQ_API_KEY) {
-  console.error('Missing GROQ_API_KEY secret');
-  process.exit(1);
-}
+const MIN_SOURCE_WORDS = 500; // source article must be substantial
+const MIN_WORDS = 650;        // published article floor
+const MAX_WORDS = 1100;
+const MAX_ATTEMPTS = 3;
+const MAX_AGE_HOURS = 60;
+const MAX_ARTICLES = 50;
+const MAX_CANDIDATES_PER_CATEGORY = 12;
 
 const CATEGORIES = [
   { id: 'news', name: 'Global News' },
@@ -29,299 +40,359 @@ const CATEGORIES = [
   { id: 'finance', name: 'Finance' }
 ];
 
-const MIN_WORDS = 1000;
-const MIN_ACCEPTABLE_WORDS = 700; // absolute floor if 3 retries can't hit 1000
-const MAX_ATTEMPTS = 3;
+const FEEDS = {
+  news: [
+    { name: 'BBC News', url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
+    { name: 'The Guardian', url: 'https://www.theguardian.com/world/rss' },
+    { name: 'NPR', url: 'https://feeds.npr.org/1004/rss.xml' },
+    { name: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml' }
+  ],
+  sports: [
+    { name: 'BBC Sport', url: 'https://feeds.bbci.co.uk/sport/rss.xml' },
+    { name: 'The Guardian', url: 'https://www.theguardian.com/sport/rss' },
+    { name: 'ESPN', url: 'https://www.espn.com/espn/rss/news' },
+    { name: 'CBS Sports', url: 'https://www.cbssports.com/rss/headlines/' }
+  ],
+  health: [
+    { name: 'BBC News', url: 'https://feeds.bbci.co.uk/news/health/rss.xml' },
+    { name: 'NPR', url: 'https://feeds.npr.org/1128/rss.xml' },
+    { name: 'The Guardian', url: 'https://www.theguardian.com/society/health/rss' }
+  ],
+  finance: [
+    { name: 'BBC News', url: 'https://feeds.bbci.co.uk/news/business/rss.xml' },
+    { name: 'The Guardian', url: 'https://www.theguardian.com/business/rss' },
+    { name: 'NPR', url: 'https://feeds.npr.org/1006/rss.xml' },
+    { name: 'CNBC', url: 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147' }
+  ]
+};
 
-const ARTICLES_PATH = path.join(__dirname, '..', 'data', 'articles.json');
+const SKIP_TITLE = /\b(live|video|podcast|quiz|newsletter|crossword|horoscope|odds|picks|predictions|how to watch|where to watch|betting|fantasy|opinion|editorial|letters)\b/i;
+const SKIP_URL = /\/(live|video|videos|audio|podcasts?|commentisfree|opinion|interactive|gallery)\//i;
 
-async function fetchJSON(url, options = {}) {
-  const res = await fetch(url, options);
-  const text = await res.text();
-  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.substring(0, 400)}`);
-  return JSON.parse(text);
-}
+// ---------- small utils ----------
 
 function decodeEntities(str) {
   return (str || '')
+    .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
-    .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"')
+    .replace(/&#0?39;|&apos;/g, "'")
     .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>');
+    .replace(/&gt;/g, '>')
+    .replace(/&rsquo;|&lsquo;/g, "'")
+    .replace(/&rdquo;|&ldquo;/g, '"')
+    .replace(/&mdash;|&ndash;/g, '-')
+    .replace(/&hellip;/g, '...')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)));
 }
 
-// ---- Real headline retrieval (Google News RSS, no API key required) ----
-
-const RSS_QUERIES = {
-  news: ['world news', 'international diplomacy', 'global politics'],
-  sports: ['sports news', 'football OR basketball OR tennis', 'sports championship'],
-  health: ['health news', 'medical research', 'public health'],
-  finance: ['finance news', 'stock market', 'economy']
-};
-
-async function fetchTrendingHeadline(category, excludeUrls) {
-  const queries = RSS_QUERIES[category.id];
-  const query = queries[Math.floor(Math.random() * queries.length)];
-  const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
-
-  const res = await fetch(feedUrl);
-  const xml = await res.text();
-
-  const itemBlocks = Array.from(xml.matchAll(/<item>([\s\S]*?)<\/item>/g)).map(m => m[1]);
-
-  for (const block of itemBlocks.slice(0, 20)) {
-    const titleMatch = block.match(/<title>(.*?)<\/title>/);
-    const linkMatch = block.match(/<link>(.*?)<\/link>/);
-    const sourceMatch = block.match(/<source[^>]*>(.*?)<\/source>/);
-    const pubDateMatch = block.match(/<pubDate>(.*?)<\/pubDate>/);
-
-    if (!titleMatch) continue;
-
-    const title = decodeEntities(titleMatch[1]);
-    const link = linkMatch ? decodeEntities(linkMatch[1]) : '';
-
-    if (excludeUrls.has(link)) continue; // already covered this exact story
-
-    return {
-      title,
-      link,
-      source: sourceMatch ? decodeEntities(sourceMatch[1]) : 'a news wire service',
-      pubDate: pubDateMatch ? pubDateMatch[1] : ''
-    };
-  }
-
-  return null; // nothing fresh found
+function stripTags(s) {
+  return (s || '').replace(/<[^>]*>/g, ' ');
 }
 
 function countWords(text) {
   return (text || '').trim().split(/\s+/).filter(Boolean).length;
 }
 
-// ---- Article generation, grounded in a real headline ----
+function loose(s) {
+  return (s || '')
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
-async function generateArticleOnce(category, headline, relatedCandidates) {
-  const relatedBlock = relatedCandidates.length
-    ? `\nPREVIOUSLY PUBLISHED MERIDIANMATTERS ARTICLES (optional cross-links):
-${relatedCandidates.map(r => `- id: "${r.id}" | title: "${r.title}"`).join('\n')}
+async function fetchText(url, ms = 20000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': UA, 'Accept': 'text/html,application/xml,application/rss+xml,*/*' },
+      signal: ctrl.signal,
+      redirect: 'follow'
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally {
+    clearTimeout(t);
+  }
+}
 
-If, and ONLY if, one of the above is genuinely relevant to a point you're making, you may reference it inline using this exact syntax: [[id|visible link text]]
-Example: "as covered in [[finance-abc123|our recent report on rate decisions]]"
-Do not force a reference if none are truly relevant. Include at most 2 such links. Never invent an id that isn't in the list above.`
-    : '';
+async function fetchJSON(url, options = {}) {
+  const res = await fetch(url, options);
+  const text = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.substring(0, 300)}`);
+  return JSON.parse(text);
+}
 
-  const prompt = `You are a professional news writer for MeridianMatters, an online news magazine.
+// ---------- feeds ----------
 
-You are reporting on this real, currently published news item:
+function tagValue(block, name) {
+  const m = block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)<\\/${name}>`, 'i'));
+  if (!m) return '';
+  return decodeEntities(m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')).trim();
+}
 
-Headline: "${headline.title}"
-Source: ${headline.source}
-${headline.pubDate ? `Published: ${headline.pubDate}` : ''}
+function parseRss(xml, feedName) {
+  const blocks = Array.from((xml || '').matchAll(/<item[\s>]([\s\S]*?)<\/item>/gi)).map(m => m[1]);
+  return blocks.map(b => ({
+    title: stripTags(tagValue(b, 'title')).replace(/\s+/g, ' ').trim(),
+    link: tagValue(b, 'link'),
+    pubDate: Date.parse(tagValue(b, 'pubDate')) || 0,
+    source: feedName
+  })).filter(i => i.title && /^https?:\/\//.test(i.link));
+}
 
-Write a full news article expanding on this real headline for a ${category.name} readership.
+async function collectCandidates(categoryId) {
+  const out = [];
+  for (const feed of FEEDS[categoryId] || []) {
+    try {
+      const xml = await fetchText(feed.url);
+      out.push(...parseRss(xml, feed.name).slice(0, 15));
+    } catch (err) {
+      console.warn(`  Feed failed (${feed.name}): ${err.message}`);
+    }
+  }
+  const cutoff = Date.now() - MAX_AGE_HOURS * 3600 * 1000;
+  return out
+    .filter(i => !i.pubDate || i.pubDate >= cutoff)
+    .filter(i => !SKIP_TITLE.test(i.title) && !SKIP_URL.test(i.link))
+    .sort((a, b) => b.pubDate - a.pubDate);
+}
 
-CRITICAL ACCURACY RULES (mandatory):
-- Base the article ONLY on what is reasonably implied by the headline above.
-- Do NOT invent specific statistics, direct quotes, named individuals, or numeric figures that are not present in the headline.
-- When adding context or analysis, frame it clearly as general context or analysis rather than as newly reported fact (e.g. "analysts have generally noted" rather than a fabricated named analyst with an invented quote).
-- Do not fabricate outcomes, figures, or details beyond what is reasonably inferable from the headline.
-- It is better to write in well-hedged, general terms than to invent false specifics. Accuracy matters more than color.
+function titleTokens(t) {
+  return new Set(loose(t).split(' ').filter(w => w.length > 3));
+}
 
-ATTRIBUTION (mandatory):
-- Naturally mention "${headline.source}" by name at least once in the body (e.g. "according to ${headline.source}" or "${headline.source} reports that...").
-${relatedBlock}
+function isDuplicateTitle(title, existingTitles) {
+  const a = titleTokens(title);
+  if (!a.size) return false;
+  for (const other of existingTitles) {
+    const b = titleTokens(other);
+    let inter = 0;
+    a.forEach(w => { if (b.has(w)) inter++; });
+    const union = a.size + b.size - inter;
+    if (union && inter / union >= 0.45) return true;
+  }
+  return false;
+}
 
-LENGTH REQUIREMENT (mandatory):
-- The "content" field must be AT LEAST ${MIN_WORDS} words. Write 9-13 well-developed paragraphs covering: what happened, why it matters, relevant background, and broader implications.
-- Do not stop early. If you are unsure you have reached ${MIN_WORDS} words, continue writing additional context and analysis paragraphs before finishing.
+// ---------- source text ----------
 
-FORMAT:
-- title: A professional headline (max 14 words), may closely follow the real headline
-- summary: 1-2 sentence teaser (max 45 words)
-- content: the full ${MIN_WORDS}+ word article, paragraphs separated by newlines
-- author: use exactly "MeridianMatters Newsroom" (do not invent a fake individual byline or credentials)
+function extractArticleText(html) {
+  const BAD = /(subscribe|sign up|newsletter|cookie|all rights reserved|follow us|click here|read more|advertisement|copyright|terms of use|privacy policy|your browser|javascript|share this|listen to|watch:)/i;
+  const clean = (html || '').replace(/<(script|style|noscript|svg|iframe|form|nav|aside|footer|header|figure|figcaption)[\s\S]*?<\/\1>/gi, ' ');
 
-Return ONLY valid JSON with exactly these keys: title, summary, content, author.
-Do not wrap the JSON in markdown. Do not add any text outside the JSON object.`;
+  const paragraphs = (chunk) => Array.from(chunk.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi))
+    .map(m => decodeEntities(stripTags(m[1])).replace(/\s+/g, ' ').trim())
+    .filter(p => p.length >= 50 && !BAD.test(p));
 
+  const art = clean.match(/<article[\s\S]*?<\/article>/i);
+  let paras = art ? paragraphs(art[0]) : [];
+  if (countWords(paras.join(' ')) < 200) paras = paragraphs(clean);
+  return paras.join('\n\n');
+}
+
+// ---------- fact gates ----------
+
+const MONTHS_DAYS = new Set(['january','february','march','april','may','june','july','august','september','october','november','december','monday','tuesday','wednesday','thursday','friday','saturday','sunday','meridianmatters']);
+
+function numbersIn(text) {
+  return (text.match(/\d[\d,]*(?:\.\d+)?/g) || []).map(n => n.replace(/,/g, '').replace(/\.$/, ''));
+}
+
+function checkGates(draft, sourceText, sourceName) {
+  const problems = [];
+  const content = draft.content || '';
+  const all = `${draft.title}\n${draft.summary}\n${content}`;
+  const sourceLoose = loose(sourceText);
+
+  // 1. Numbers must come from the source
+  const srcNums = new Set(numbersIn(sourceText));
+  const thisYear = String(new Date().getFullYear());
+  const badNums = [...new Set(numbersIn(all).filter(n => !srcNums.has(n) && n !== thisYear))];
+  if (badNums.length) problems.push(`numbers not found in the source: ${badNums.slice(0, 8).join(', ')}`);
+
+  // 2. Direct quotes must be verbatim from the source
+  const quotes = Array.from(content.matchAll(/[\u201c"]([^\u201d"\n]{12,})[\u201d"]/g)).map(m => m[1]);
+  const badQuotes = quotes.filter(q => !sourceLoose.includes(loose(q)));
+  if (badQuotes.length) problems.push(`quotes that are not verbatim in the source: ${badQuotes.slice(0, 3).map(q => `"${q.slice(0, 60)}"`).join('; ')}`);
+  if (quotes.length > 3) problems.push('too many direct quotes (max 3)');
+
+  // 3. Proper names must come from the source
+  const allow = new Set([...MONTHS_DAYS, ...loose(sourceName).split(' ')]);
+  const badNames = new Set();
+  for (const sentence of content.split(/(?<=[.!?])\s+/)) {
+    const words = sentence.split(/\s+/);
+    for (let i = 1; i < words.length; i++) {
+      const w = words[i].replace(/^[^A-Za-z]+|[^A-Za-z'\u2019-]+$/g, '').replace(/['\u2019]s$/, '');
+      if (!/^[A-Z][a-z]{2,}/.test(w)) continue;
+      const lw = w.toLowerCase();
+      if (allow.has(lw)) continue;
+      if (sourceLoose.includes(lw.slice(0, Math.max(4, lw.length - 2)))) continue;
+      badNames.add(w);
+    }
+  }
+  if (badNames.size > 3) problems.push(`names not found in the source: ${[...badNames].slice(0, 8).join(', ')}`);
+
+  // 4. No close copying of the source's wording (8-word shingles)
+  const srcWords = sourceLoose.split(' ');
+  const srcShingles = new Set();
+  for (let i = 0; i + 8 <= srcWords.length; i++) srcShingles.add(srcWords.slice(i, i + 8).join(' '));
+  const outWords = loose(content).split(' ');
+  let total = 0, copied = 0;
+  for (let i = 0; i + 8 <= outWords.length; i++) {
+    total++;
+    if (srcShingles.has(outWords.slice(i, i + 8).join(' '))) copied++;
+  }
+  if (total && copied / total > 0.06) problems.push('too much wording copied from the source; rewrite far more freely');
+
+  return problems;
+}
+
+// ---------- drafting ----------
+
+async function groqDraft(prompt) {
   const data = await fetchJSON('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${GROQ_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'openai/gpt-oss-120b',
+      model: MODEL,
       messages: [
-        { role: 'system', content: 'You are a careful, accuracy-focused professional journalist. You only output valid JSON. Never use markdown code fences. You never invent facts, quotes, or statistics that are not grounded in the source headline given to you. You always write long, detailed articles when requested.' },
+        { role: 'system', content: 'You are a careful news editor. You output only valid JSON. You never invent facts, names, numbers or quotes that are not in the source text you are given.' },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.6,
-      max_tokens: 4500,
+      temperature: 0.4,
+      max_tokens: 5000,
       response_format: { type: 'json_object' }
     })
   });
-
   const text = data?.choices?.[0]?.message?.content || '';
-  if (!text) throw new Error('Empty response from Groq');
-
-  let cleaned = text.replace(/```json|```/gi, '').trim();
-  const start = cleaned.indexOf('{');
-  const end = cleaned.lastIndexOf('}');
-  if (start === -1 || end === -1) throw new Error('No JSON object found');
-
-  const parsed = JSON.parse(cleaned.substring(start, end + 1));
-
-  if (!parsed.title || !parsed.summary || !parsed.content || !parsed.author) {
-    throw new Error('Missing required fields');
-  }
-
+  const cleaned = text.replace(/```json|```/gi, '').trim();
+  const s = cleaned.indexOf('{');
+  const e = cleaned.lastIndexOf('}');
+  if (s === -1 || e === -1) throw new Error('No JSON in model reply');
+  const parsed = JSON.parse(cleaned.substring(s, e + 1));
+  if (!parsed.title || !parsed.summary || !parsed.content) throw new Error('Missing fields');
   return parsed;
 }
 
-// Actually enforces the word-count minimum instead of just logging a
-// warning: retries up to MAX_ATTEMPTS times and keeps the longest result.
-// Only falls back to a shorter article if it clears an absolute floor.
-async function generateArticleWithRetry(category, headline, relatedCandidates) {
-  let best = null;
+function buildPrompt(item, sourceText, targetWords, feedback) {
+  const src = sourceText.length > 12000 ? sourceText.slice(0, 12000) : sourceText;
+  return `You are a news editor at MeridianMatters. Write an ORIGINAL news article based ONLY on the SOURCE TEXT below, published by ${item.source}.
 
+HARD RULES
+1. Use only facts, names, numbers, dates and quotes that appear in the SOURCE TEXT. Never add figures, names, quotes, places or events that are not in it.
+2. Rewrite completely in your own words and with your own structure. Do not copy sentences or long phrases.
+3. Direct quotes: at most 2, exact words from the source, in double quotes, attributed. Otherwise paraphrase.
+4. You may add 1-2 short paragraphs of widely known background (what a term means, how a process works) with NO numbers, dates or names that are not in the source, clearly framed as background.
+5. Mention "${item.source}" by name once as the source of the reporting.
+6. Neutral, factual tone. No opinion, no speculation, no advice, no calls to action.
+7. Length: about ${targetWords} words (minimum ${MIN_WORDS}). Paragraphs separated by a blank line. No headings, no bullet lists.
+${feedback ? `\nYOUR PREVIOUS DRAFT WAS REJECTED. Fix this: ${feedback}\n` : ''}
+SOURCE HEADLINE: ${item.title}
+
+SOURCE TEXT:
+"""
+${src}
+"""
+
+Return ONLY JSON: {"title": "factual headline, max 14 words", "summary": "1-2 sentences, max 40 words", "content": "the full article"}`;
+}
+
+async function writeWithGates(item, sourceText) {
+  const srcWords = countWords(sourceText);
+  const target = Math.min(MAX_WORDS, Math.max(MIN_WORDS + 50, Math.round(srcWords * 1.1)));
+  let feedback = '';
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
       console.log(`  Attempt ${attempt}/${MAX_ATTEMPTS}...`);
-      const result = await generateArticleOnce(category, headline, relatedCandidates);
-      const wc = countWords(result.content);
-      console.log(`  → ${wc} words`);
-
-      if (!best || wc > countWords(best.content)) best = result;
-      if (wc >= MIN_WORDS) return result;
+      const draft = await groqDraft(buildPrompt(item, sourceText, target, feedback));
+      const wc = countWords(draft.content);
+      const problems = checkGates(draft, sourceText, item.source);
+      if (wc < MIN_WORDS) problems.push(`too short (${wc} words, need at least ${MIN_WORDS}); expand with more detail from the source`);
+      console.log(`  -> ${wc} words, ${problems.length} problem(s)`);
+      if (!problems.length) return draft;
+      problems.forEach(p => console.log(`     - ${p}`));
+      feedback = problems.join('; ');
     } catch (err) {
       console.warn(`  Attempt ${attempt} failed: ${err.message}`);
     }
     await new Promise(r => setTimeout(r, 1200));
   }
-
-  if (best && countWords(best.content) >= MIN_ACCEPTABLE_WORDS) {
-    console.warn(`  Using best attempt at ${countWords(best.content)} words (below ${MIN_WORDS} target, but above the ${MIN_ACCEPTABLE_WORDS}-word floor).`);
-    return best;
-  }
-
-  throw new Error(`Could not reach the ${MIN_ACCEPTABLE_WORDS}-word floor after ${MAX_ATTEMPTS} attempts`);
+  return null;
 }
 
-// Pull the more meaningful words out of the real headline for image
-// search, instead of generic category names like "Health news" which
-// return whatever generic stock photo happens to match that phrase.
-const STOPWORDS = new Set(['a','an','the','of','in','on','at','to','for','and','or','is','are','with','after','over','amid','as','its','their']);
+// ---------- images (Wikimedia Commons, entity-matched only) ----------
 
-function headlineKeywords(title, count) {
-  const words = (title || '')
-    .replace(/[^a-zA-Z0-9\s]/g, '')
-    .split(' ')
-    .filter(w => w.length > 2 && !STOPWORDS.has(w.toLowerCase()));
-  return words.slice(0, count).join(' ');
-}
+const NOT_ENTITY = new Set(['the','after','over','amid','with','from','what','why','how','who','new','says','said','will','this','that','week','first','latest','report','reports','breaking']);
 
-// Unsplash's own alt_description metadata is often useless — some photos
-// are tagged by photographers with a single generic word ("text", "photo",
-// "design"). Reject anything too short or on a known-junk list, and fall
-// back to a cleaned-up version of the search query instead, which is
-// always at least topically descriptive.
-const JUNK_ALT_WORDS = new Set([
-  'text', 'photo', 'image', 'design', 'background', 'pattern',
-  'abstract', 'photography', 'picture', 'graphic', 'art'
-]);
-
-function cleanCaption(altDescription, fallbackQuery) {
-  const alt = (altDescription || '').trim();
-  const isJunk = !alt || alt.length < 12 || JUNK_ALT_WORDS.has(alt.toLowerCase());
-  if (isJunk) {
-    // Turn the raw search query into a readable, capitalized caption.
-    return fallbackQuery
-      .split(' ')
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
-  }
-  return alt.charAt(0).toUpperCase() + alt.slice(1);
-}
-
-async function getImage(query) {
-  // Try Wikimedia Commons first — a real photo library of actual named
-  // people, places, and organizations, with mandatory license/attribution
-  // metadata on every file. Falls back to Unsplash stock photography if
-  // nothing relevant turns up (which is common for query terms that aren't
-  // a specific real-world proper noun).
-  const wiki = await getWikimediaImage(query);
-  if (wiki) return wiki;
-
-  if (!UNSPLASH_ACCESS_KEY) return { url: '', alt: query, credit: '' };
-  try {
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`;
-    const data = await fetchJSON(url, {
-      headers: { Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}` }
-    });
-    const results = data.results || [];
-    if (results.length === 0) return { url: '', alt: query, credit: '' };
-    const photo = results[Math.floor(Math.random() * Math.min(4, results.length))];
-    const rawUrl = photo.urls?.regular || photo.urls?.small || '';
-    // Ask Unsplash to serve a smaller, more compressed version — full-size
-    // "regular" photos are ~1080px and needlessly heavy on a phone screen,
-    // especially on slow connections.
-    const optimizedUrl = rawUrl ? `${rawUrl}&w=900&q=70&auto=format` : '';
-    const photographer = photo.user?.name || 'Unsplash';
-    return {
-      url: optimizedUrl,
-      alt: cleanCaption(photo.alt_description, query),
-      credit: `Photo: ${photographer}`
+function extractEntities(title) {
+  const found = [];
+  for (const seg of (title || '').split(/[:;,\u2014\u2013|]| - /)) {
+    const toks = seg.trim().split(/\s+/).map(t => t.replace(/['\u2019]s$/, '').replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9.]+$/g, ''));
+    let run = [];
+    const flush = (startIdx) => {
+      if (run.length >= 2) {
+        if (run.length <= 3) found.push(run.join(' '));
+        else { found.push(run.slice(0, 3).join(' ')); found.push(run.slice(-2).join(' ')); }
+      } else if (run.length === 1 && startIdx > 0 && run[0].length >= 5 && !NOT_ENTITY.has(run[0].toLowerCase())) found.push(run[0]);
+      run = [];
     };
-  } catch (err) {
-    console.error('  Unsplash error:', err.message);
-    return { url: '', alt: query, credit: '' };
+    toks.forEach((t, i) => {
+      const isCap = /^[A-Z][A-Za-z.]*$/.test(t) && !NOT_ENTITY.has(t.toLowerCase());
+      if (isCap) {
+        if (!run.length) run._start = i;
+        run.push(t);
+      } else {
+        flush(run._start || 0);
+      }
+    });
+    flush(run._start || 0);
   }
+  return [...new Set(found)].sort((a, b) => b.length - a.length).slice(0, 3);
 }
 
-// Strips Wikimedia's HTML-formatted extmetadata fields (Artist, License
-// name) down to plain text for a clean credit line.
-function stripHtml(str) {
-  return (str || '').replace(/<[^>]*>/g, '').trim();
+function stripHtml(s) {
+  return decodeEntities((s || '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
-async function getWikimediaImage(query) {
-  try {
-    const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|extmetadata|size&iiurlwidth=900&format=json&formatversion=2&origin=*`;
-    const data = await fetchJSON(url);
-    const pages = data?.query?.pages || [];
-
-    for (const page of pages) {
-      const info = page.imageinfo?.[0];
-      if (!info) continue;
-
-      // Skip anything too small (thumbnails, icons) or not a real photo
-      // (svg diagrams, logos) — width/height and mime give us a decent filter.
-      const isPhoto = info.mime === 'image/jpeg' || info.mime === 'image/png';
-      const wideEnough = (info.width || 0) >= 700;
-      if (!isPhoto || !wideEnough) continue;
-
-      const meta = info.extmetadata || {};
-      const artist = stripHtml(meta.Artist?.value);
-      const license = stripHtml(meta.LicenseShortName?.value) || 'Wikimedia Commons';
-      const title = stripHtml(meta.ObjectName?.value) || page.title.replace(/^File:/, '').replace(/\.\w+$/, '');
-
-      const credit = artist
-        ? `Photo: ${artist} / Wikimedia Commons (${license})`
-        : `Wikimedia Commons (${license})`;
-
-      return {
-        url: info.thumburl || info.url,
-        alt: title,
-        credit
-      };
+async function findImage(entities) {
+  for (const entity of entities) {
+    try {
+      const q = encodeURIComponent(`"${entity}" filetype:bitmap`);
+      const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${q}&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=url|extmetadata|size|mime&iiurlwidth=1000&format=json&formatversion=2&origin=*`;
+      const data = await fetchJSON(url, { headers: { 'User-Agent': UA } });
+      const pages = data?.query?.pages || [];
+      const tokens = entity.toLowerCase().split(/\s+/).filter(t => t.length >= 3);
+      for (const page of pages) {
+        const info = page.imageinfo?.[0];
+        if (!info) continue;
+        if (!(info.mime === 'image/jpeg' || info.mime === 'image/png')) continue;
+        if ((info.width || 0) < 800 || (info.height || 0) < 450 || info.width < info.height * 1.2) continue;
+        const meta = info.extmetadata || {};
+        const title = page.title.replace(/^File:/, '').replace(/\.\w+$/, '').replace(/_/g, ' ');
+        const hay = `${title} ${stripHtml(meta.ObjectName?.value)} ${stripHtml(meta.ImageDescription?.value)} ${stripHtml(meta.Categories?.value)}`.toLowerCase();
+        if (!tokens.every(t => hay.includes(t))) continue;
+        if (/\b(logo|map|flag|diagram|poster|screenshot|cartoon|caricature|chart|stamp|coat of arms)\b/.test(hay)) continue;
+        const artist = stripHtml(meta.Artist?.value);
+        const license = stripHtml(meta.LicenseShortName?.value) || 'Wikimedia Commons';
+        return {
+          url: info.thumburl || info.url,
+          alt: (stripHtml(meta.ObjectName?.value) || title).slice(0, 140),
+          credit: artist ? `Photo: ${artist.slice(0, 80)} / Wikimedia Commons (${license})` : `Wikimedia Commons (${license})`
+        };
+      }
+    } catch (err) {
+      console.warn(`  Image lookup failed for "${entity}": ${err.message}`);
     }
-    return null; // nothing suitable found — caller falls back to Unsplash
-  } catch (err) {
-    console.error('  Wikimedia error:', err.message);
-    return null;
   }
+  return null;
 }
+
+// ---------- storage ----------
 
 function loadArticles() {
   try {
@@ -334,106 +405,111 @@ function loadArticles() {
 function saveArticles(data) {
   data.lastUpdated = new Date().toISOString();
   fs.writeFileSync(ARTICLES_PATH, JSON.stringify(data, null, 2));
-  console.log('  Saved articles.json');
 }
 
 async function main() {
-  console.log('========================================');
-  console.log('MeridianMatters Article Generator');
-  console.log('Mode: Grounded in real headlines, 1000+ words enforced');
+  if (!GROQ_API_KEY) {
+    console.error('Missing GROQ_API_KEY secret');
+    process.exit(1);
+  }
+  console.log('MeridianMatters generator v2 (source-grounded, fact-gated)');
   console.log('Time:', new Date().toISOString());
-  console.log('========================================');
 
   const data = loadArticles();
-  const newArticles = [];
-
-  // Don't re-cover a story we've already published an article about.
-  const usedSourceUrls = new Set(
-    (data.articles || []).map(a => a.sourceUrl).filter(Boolean)
-  );
+  const usedUrls = new Set((data.articles || []).map(a => a.sourceUrl).filter(Boolean));
+  const existingTitles = (data.articles || []).flatMap(a => [a.title, a.sourceTitle]).filter(Boolean);
+  const added = [];
 
   for (const category of CATEGORIES) {
+    console.log(`\n-> ${category.name}`);
     try {
-      console.log(`\n→ ${category.name}`);
+      const candidates = await collectCandidates(category.id);
+      console.log(`  ${candidates.length} fresh candidate(s)`);
+      let tried = 0;
+      for (const item of candidates) {
+        if (tried >= MAX_CANDIDATES_PER_CATEGORY) break;
+        if (usedUrls.has(item.link) || isDuplicateTitle(item.title, existingTitles)) continue;
+        tried++;
+        console.log(`  Candidate: ${item.title} (${item.source})`);
 
-      const headline = await fetchTrendingHeadline(category, usedSourceUrls);
-      if (!headline) {
-        console.log('  No fresh headline found for this category — skipping rather than fabricating one.');
-        continue;
+        let sourceText = '';
+        try {
+          sourceText = extractArticleText(await fetchText(item.link));
+        } catch (err) {
+          console.log(`    could not fetch article: ${err.message}`);
+          continue;
+        }
+        const sw = countWords(sourceText);
+        if (sw < MIN_SOURCE_WORDS) {
+          console.log(`    source too thin (${sw} words), skipping`);
+          continue;
+        }
+
+        const draft = await writeWithGates(item, sourceText);
+        if (!draft) {
+          console.log('    could not produce a draft that passes the fact checks, skipping');
+          continue;
+        }
+
+        // Only trust names that also appear capitalised in the source article
+        // (real proper nouns), so generic phrases like "Lung Surgery" never
+        // pull in a topically-similar but wrong photo.
+        const entities = extractEntities(item.title).filter(e => sourceText.includes(e));
+        const image = await findImage(entities);
+        console.log(`  Image: ${image ? image.alt : 'none (no entity-matched photo)'}`);
+
+        const article = {
+          id: `${category.id}-${Date.now().toString(36)}`,
+          category: category.id,
+          title: draft.title.trim(),
+          summary: draft.summary.trim(),
+          content: draft.content.trim(),
+          author: 'MeridianMatters Newsroom',
+          date: new Date().toISOString().split('T')[0],
+          image: image ? image.url : '',
+          imageAlt: image ? image.alt : '',
+          imageCredit: image ? image.credit : '',
+          images: [],
+          tags: [category.id],
+          featured: false,
+          status: 'published',
+          sourceName: item.source,
+          sourceUrl: item.link,
+          sourceTitle: item.title,
+          aiAssisted: true,
+          editorChecked: true,
+          wordCount: countWords(draft.content)
+        };
+        added.push(article);
+        usedUrls.add(item.link);
+        existingTitles.push(article.title, item.title);
+        console.log(`  Published: ${article.title} (${article.wordCount} words)`);
+        break;
       }
-      console.log(`  Headline: ${headline.title}`);
-      console.log(`  Source: ${headline.source}`);
-
-      // Give the model a short list of already-published, same-category
-      // articles it can optionally cross-link to — only real ids, only if
-      // genuinely relevant (enforced in the prompt).
-      const relatedCandidates = (data.articles || [])
-        .filter(a => a.category === category.id && (a.status || 'published') === 'published')
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 5)
-        .map(a => ({ id: a.id, title: a.title }));
-
-      const generated = await generateArticleWithRetry(category, headline, relatedCandidates);
-      console.log(`  Title: ${generated.title}`);
-      console.log(`  Final word count: ${countWords(generated.content)}`);
-
-      const image = await getImage(`${headlineKeywords(headline.title, 4)} ${category.name}`);
-      console.log(`  Image: ${image.url ? 'Yes' : 'No'}`);
-
-      // Extra inline images so the article isn't just a single hero image —
-      // spread through the body like a real publication layout. Different
-      // keyword slices of the real headline keep them varied from the hero
-      // shot and from each other, rather than repeating the same generic
-      // category search three times.
-      const inlineImage1 = await getImage(`${headlineKeywords(headline.title, 3)}`);
-      const inlineImage2 = await getImage(`${category.name} ${headlineKeywords(headline.title, 2)}`);
-      const images = [inlineImage1, inlineImage2].filter(img => img.url);
-      console.log(`  Inline images: ${images.length}`);
-
-      newArticles.push({
-        id: `${category.id}-${Date.now().toString(36)}`,
-        category: category.id,
-        title: generated.title,
-        summary: generated.summary,
-        content: generated.content,
-        author: generated.author,
-        date: new Date().toISOString().split('T')[0],
-        image: image.url,
-        imageAlt: image.alt,
-        imageCredit: image.credit || '',
-        images,
-        tags: [category.id],
-        featured: Math.random() > 0.45,
-        status: 'published',
-        sourceName: headline.source,
-        sourceUrl: headline.link,
-        aiAssisted: true
-      });
-
-      usedSourceUrls.add(headline.link);
-
-      // Longer delay because we are generating big articles and doing retries.
-      await new Promise(r => setTimeout(r, 2500));
     } catch (err) {
-      console.error(`✗ Failed for ${category.name}: ${err.message}`);
+      console.error(`  Failed for ${category.name}: ${err.message}`);
     }
+    await new Promise(r => setTimeout(r, 1500));
   }
 
-  if (newArticles.length === 0) {
-    console.log('\nNo new articles were generated.');
+  if (!added.length) {
+    console.log('\nNo articles passed the quality gates this run. Nothing published.');
     return;
   }
 
-  data.articles = [...newArticles, ...data.articles].slice(0, 50);
-  saveArticles(data);
+  const lead = added.find(a => a.image) || added[0];
+  lead.featured = true;
 
-  console.log('\n========================================');
-  console.log(`✅ Successfully added ${newArticles.length} new articles`);
-  console.log('Total articles now:', data.articles.length);
-  console.log('========================================');
+  data.articles = [...added, ...(data.articles || [])].slice(0, MAX_ARTICLES);
+  saveArticles(data);
+  console.log(`\nAdded ${added.length} article(s). Total now: ${data.articles.length}`);
 }
 
-main().catch(err => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(err => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+} else {
+  module.exports = { checkGates, extractArticleText, extractEntities, parseRss, isDuplicateTitle, countWords };
+}
