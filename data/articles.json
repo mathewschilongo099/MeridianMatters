@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "health-mvviolmm",
+      "category": "health",
+      "title": "Northern Ireland shifts police role in mental health emergencies",
+      "summary": "From November, the PSNI will stop conducting welfare checks unless there is a risk of harm, crime, or life danger, redirecting calls to health and social services.",
+      "content": "The Police Service of Northern Ireland (PSNI) is set to change the way it answers mental‑health related 999 calls. Beginning in November, officers will no longer carry out concern‑for‑welfare checks unless the situation involves a risk to life, a threat of harm, or a criminal element. The move, described as the Right Care Right Person policy, aims to ensure that people in crisis are attended to by the professionals best equipped to help them.\n\nAt present the PSNI handles roughly 30,000 mental‑health calls each year – about 80 a day on average. A large share of these incidents are reported by health workers rather than members of the public. Assistant Chief Constable Ryan Henderson has warned that the volume of contacts has reached unprecedented levels, with only a small fraction linked to criminal activity.\n\nUnder the new system, all 999 calls will still be routed through the existing emergency number, but call handlers will assess each incident and, where appropriate, pass the case to health, social‑care or community services instead of dispatching police officers. If the assessment identifies any risk of harm, a danger to life, or a crime, police attendance will continue as before. The shift is intended to reduce delays, improve consistency in decision‑making and support safe, lawful practice across the region.\n\n\"If you're in a mental health crisis you might find a policeman turning up extremely frightening and it might worsen the situation,\" said Charles Little, a campaigner who lost his relatives in a 2017 attack. He added that the policy could have \"saved the day\" in that case, arguing that people in crisis need care from the right professionals rather than an immediate police presence.\n\nA welfare check, sometimes called a concern‑for‑welfare visit, is traditionally a police response to verify that an individual is safe when there are concerns about their wellbeing. The check can involve speaking with the person, their family or neighbours, and determining whether any immediate assistance or protection is required. In many jurisdictions, such checks have become a de‑facto front line for mental‑health emergencies, even when no crime is involved.\n\nDr Ross Irvine of the Royal College of Psychiatrists in Northern Ireland expressed concern that the health sector is already under strain. He noted that a significant portion of mental‑health posts across the province are vacant, creating real‑world implications for service delivery. The removal of police as a safety net, he warned, could place additional pressure on services that are struggling to maintain capacity.\n\nGeorge Hannah, representing the Northern Ireland branch of the British Association of Social Workers, highlighted worries about the speed of implementation. He indicated that many social‑work professionals feel unprepared to take on responsibilities previously handled by police, especially where there is a risk of escalation. Hannah suggested that without sufficient resources, the policy could simply shift the burden rather than resolve underlying gaps.\n\nProf Siobhan O'Neill, Northern Ireland’s mental‑health champion, welcomed the policy as a step toward aligning response with need. She argued that police were often attending calls that did not involve a policing issue and that the new approach could improve coordination between agencies. However, O'Neill also pointed out that funding for a regional crisis‑intervention service remains lacking, and that without investment the intended benefits may be limited.\n\nThe Right Care Right Person policy has been introduced in phases across Northern Ireland and mirrors a model already adopted by some forces in England and Wales since 2023. In those areas, police no longer attend calls where no crime has been committed and there is no immediate risk, allowing health and community services to take the lead.\n\nCritics stress that the health and social‑care sectors must be ready to absorb the additional workload. With existing vacancies and resource constraints, there is a risk that response times could lengthen or that individuals might fall through gaps in care. The PSNI has acknowledged these concerns but maintains that the policy will ultimately reduce avoidable delays and improve outcomes for people experiencing mental‑health crises.\n\nBBC News reported that the PSNI expects the new framework to help ensure that individuals receive care from the most appropriate professional or service. The force emphasized that the change is not intended to diminish public safety but to create a more suitable response structure for mental‑health emergencies.\n\nAs the policy rolls out, monitoring its impact on both policing and health services will be essential. Stakeholders from law enforcement, mental‑health advocacy, and social‑care organisations will need to collaborate closely to address any emerging challenges and to ensure that the promised improvements in care delivery are realized.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-10-30",
+      "image": "",
+      "imageAlt": "",
+      "imageCredit": "",
+      "images": [],
+      "tags": [
+        "health"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "BBC News",
+      "sourceUrl": "https://www.bbc.co.uk/news/articles/cvglwd7y00g5o?at_medium=RSS&at_campaign=rss",
+      "sourceTitle": "How major policy shift is changing police response to mental health call-outs",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 760
+    },
+    {
       "id": "health-mvuxtkfd",
       "category": "health",
       "title": "Elderly Cancer Survivor Drives Four Hours for Heart Tests Amid Transport Shortages",
@@ -625,5 +649,5 @@
       "wordCount": 630
     }
   ],
-  "lastUpdated": "2026-10-30T12:19:40.745Z"
+  "lastUpdated": "2026-10-30T22:03:14.249Z"
 }
