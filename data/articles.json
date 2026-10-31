@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "sports-mvwc6uc1",
+      "category": "sports",
+      "title": "Verstappen and Lawson receive grid penalties after Mexico practice clash",
+      "summary": "Both drivers were penalised one grid spot after a side‑on collision in Friday practice at the Mexico City Grand Prix, with stewards deeming the manoeuvres unnecessary and clumsy.",
+      "content": "Max Verstappen and his Red Bull junior teammate Liam Lawson were each handed a one‑place grid drop following a collision during the final practice session for the Mexico City Grand Prix. The incident occurred in the stadium section of the circuit, where the two cars ran side by side through three corners before making contact at the hairpin. \n\nThe FIA stewards concluded that both drivers were at fault, describing their conduct as \"unacceptable\" and noting that each driver admitted the moves were unnecessary and \"clumsy\". In an unusual step, the officials applied a sporting penalty for an infringement that took place in practice rather than during qualifying or the race. \n\nVerstappen, who was on a flying lap, accused Lawson of attempting to force him off the track. \"Maybe not very smart behaviour what he was trying to do there,\" Verstappen said before the stewards delivered their verdict. Lawson, on a cool‑down lap after a timed effort, was also deemed responsible for the contact. Both drivers later accepted that the manoeuvre was avoidable. \n\nRacing Bulls team principal Alan Permane summed up the stewards’ view, stating, \"One word - unnecessary.\" He added that both drivers could improve their approach, emphasizing that the incident added no value to the weekend. \n\nThe penalty will see Verstappen start one position lower than his qualifying result, while Lawson will also be demoted by a single grid spot. Neither driver indicated that the sanction would significantly affect their overall weekend strategy. \n\nBackground: In Formula 1, grid penalties are applied by moving a driver back a set number of places from their qualifying position. The penalty is intended to discourage unsafe or unsporting behaviour and can be issued for a range of infringements, including causing collisions, exceeding power unit component limits, or technical non‑compliance. When a penalty is applied after practice, the driver’s starting position is adjusted based on the qualifying order, ensuring the sanction is reflected in the race grid. \n\nThe Mexico City circuit, situated at roughly 2,200 metres altitude, presents unique challenges. The thin air reduces aerodynamic downforce and cooling efficiency, making tyre management and engine performance more demanding. Overtaking is often difficult, and teams typically favour a one‑stop strategy to minimise time lost in the pits. \n\nFriday’s session also highlighted the performance of several championship contenders. Ferrari’s Charles Leclerc topped the timing sheets, edging McLaren’s Lando Norris by a narrow margin, while Mercedes driver Kimi Antonelli, poised to clinch his first world title, recorded the fourth‑fastest time. Antonelli’s championship hopes rest on the final race, with only a victory by George Russell or a win by Lewis Hamilton capable of preventing him from securing the title. \n\nLeclerc’s pace was 0.103 seconds ahead of Norris, with Russell just 0.003 seconds further back. Antonelli was 0.217 seconds off the leader and ahead of the Red Bull cars of Verstappen and Isack Hadjar. Hamilton, who suffered a technical issue that halted his qualifying simulation runs, expressed disappointment but remained optimistic about the team’s setup. \n\nThe practice also featured a strong showing from rookie drivers, with ten of the eleven teams fielding less‑experienced pilots. Among them, Cadillac’s Colton Herta ran a test that brought him close to meeting the FIA’s super‑licence points requirement, though he remains one point short and will need an additional practice session to qualify for a race seat. \n\nLawson’s future remains uncertain as he competes for one of two seats at the Racing Bulls junior team for the next season, alongside current teammate Arvid Lindblad and Formula 2 prospect Nikola Tsolov. His previous stints in the senior Red Bull squad included a brief two‑race spell at the start of 2025 and a three‑race replacement role for Isack Hadjar after the French driver broke his wrist. \n\nThe incident and subsequent penalties were reported by BBC Sport, which noted the stewards’ decision as an uncommon application of a sporting penalty for a practice‑session collision. Both drivers accepted responsibility, and the grid adjustments will be reflected in the starting order for Sunday’s race, where strategic choices and the high‑altitude environment are expected to play a decisive role in the outcome.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-10-31",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Mark_Cavendish_and_Iljo_Keisse_lead_Lawson_Craddock_%2828889210798%29.jpg/1280px-Mark_Cavendish_and_Iljo_Keisse_lead_Lawson_Craddock_%2828889210798%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageAlt": "Mark Cavendish and Iljo Keisse lead Lawson Craddock (28889210798)",
+      "imageCredit": "Photo: Ray Rogers from Novato, United States / Wikimedia Commons (CC BY-SA 2.0)",
+      "images": [],
+      "tags": [
+        "sports"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "BBC Sport",
+      "sourceUrl": "https://www.bbc.co.uk/sport/formula1/articles/cqde8p6j9ye7o?at_medium=RSS&at_campaign=rss",
+      "sourceTitle": "Verstappen and Lawson given grid penalties for Mexico practice collision",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 682
+    },
+    {
       "id": "health-mvviolmm",
       "category": "health",
       "title": "Northern Ireland shifts police role in mental health emergencies",
@@ -649,5 +673,5 @@
       "wordCount": 630
     }
   ],
-  "lastUpdated": "2026-10-30T22:03:14.249Z"
+  "lastUpdated": "2026-10-31T11:51:34.587Z"
 }
