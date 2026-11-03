@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "news-mw0qnwym",
+      "category": "news",
+      "title": "Trump moves to cut South Africa and Rwanda from US Trade Deal",
+      "summary": "President Donald Trump has announced plans to remove South Africa and Rwanda from the African Growth and Opportunity Act by 1 January 2027, citing security, trade barriers and eligibility concerns, according to BBC News.",
+      "content": "President Donald Trump has formally informed Congress that the United States intends to end the participation of South Africa and Rwanda in the African Growth and Opportunity Act (AGOA) starting 1 January 2027. The decision follows an annual review by the U.S. Trade Representative’s office, which concluded that both nations were not meeting the programme’s eligibility standards.\n\nAGOA, a preferential trade arrangement, allows qualifying African countries to ship a wide range of products to the United States without tariffs. The scheme is intended to promote economic development and deepen trade ties between the United States and the continent.\n\nU.S. Trade Representative Jamieson Greer said the review identified practices in the two countries that conflicted with the programme’s requirements. He added that the administration had already sent formal notifications to the governments of South Africa and Rwanda. Greer also stated, \"The Trump administration is working to ensure our African partners take the necessary steps to meet the eligibility criteria.\" \n\nIn a letter addressed to President Cyril Ramaphosa, Trump argued that South Africa’s actions on international security and its cooperation with governments viewed unfavourably by Washington posed risks to U.S. national security and foreign policy. The president also accused Pretoria of maintaining substantial obstacles to American trade and investment, citing restrictions on agricultural market access, regulatory hurdles, investment protections and intellectual‑property rules.\n\nSouth Africa’s Trade Minister Parks Tau called the move \"unfortunate\" and said that Washington was raising new issues that had not been part of the trade talks that began in 2025. He emphasized that South Africa would continue to broaden its export markets to safeguard jobs.\n\nSouth Africa has sought to contextualise the potential loss of AGOA benefits, noting that the bulk of its trade with the United States occurs outside the preferential scheme. Government data show that about 89 % of South African exports to the U.S. in 2025 entered under ordinary World Trade Organization most‑favoured‑nation terms, while roughly 10 % benefitted from AGOA, down from 28 % the previous year. The value of exports under the programme fell to about $1.7 billion in 2025, compared with $4 billion in 2024. Bilateral trade reached $28.8 billion in 2025, and more than 600 American companies operate in South Africa, supporting around 134,600 jobs.\n\nPretoria highlighted the complementary nature of the two economies. South Africa supplies 12 of the 50 minerals the United States deems critical and provides about 70 % of the isotopes used in American cancer treatment. South African manufacturers also rely on U.S. inputs for products such as vehicles and boats that are exported under AGOA.\n\nOxford Economics senior economist Jee‑A van der Linde warned that the U.S. decision could increase pressure on South Africa’s manufacturing sector, noting that displaced exports may be hard to redirect amid global trade disruptions and competition from low‑cost Chinese imports, especially in the automotive field. He observed that South Africa has previously managed to shift some tariff‑affected goods to markets in Europe and China.\n\nU.S. Ambassador to South Africa Leo Brent Bozell III described the outcome as regrettable, saying South African policies led to the termination from AGOA. He wrote on the social platform X that the result was \"predictable and preventable\" given the South African government’s rejection of U.S. concerns.\n\nRwanda faces a similar fate. Washington’s review raised issues related to human‑rights practices, political pluralism, the rule of law and workers’ rights. The move follows a recent U.S. Treasury sanction on Rwanda’s defence ministry for alleged involvement with the M23 rebel group in eastern Democratic Republic of Congo. Rwanda denies the allegations despite what the Treasury described as overwhelming evidence.\n\nRwanda’s exports to the United States rose to $43.3 million in 2025 from $13.1 million in 2024, according to import data. Oxford Economics economist Alexander Venter noted that the United States accounted for about 2 % of Rwanda’s merchandise exports in 2025, with only around 4 % of those exports benefiting from AGOA preferences. He added that neighbouring African nations and Asian markets continue to dominate Rwanda’s trade.\n\nThe termination of AGOA benefits for both countries arrives amid already strained diplomatic relations. Last year, President Trump accused South Africa of persecuting its white minority and announced a programme offering asylum to white Afrikaners, repeating widely discredited claims of a genocide against the white population. The current trade action adds another layer of tension, potentially limiting the two nations’ access to preferential U.S. market treatment.\n\nBoth governments have signalled intent to mitigate the impact. South Africa stresses the broader trade relationship beyond AGOA, while Rwanda points to growing exports to other regions. Analysts suggest that the loss of duty‑free access could compel both economies to seek alternative markets and adjust supply chains, though the transition may be challenging given existing dependencies on U.S. inputs and demand.\n\nThe developments underscore the intersection of trade policy with broader geopolitical and security considerations, reflecting Washington’s willingness to leverage economic tools to address concerns it deems critical to national interests.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-11-03",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Cape_point_old_lighthouse.jpg/1280px-Cape_point_old_lighthouse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageAlt": "Cape point old lighthouse",
+      "imageCredit": "Photo: thomas_sly / Wikimedia Commons (CC BY 2.0)",
+      "images": [],
+      "tags": [
+        "news"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "BBC News",
+      "sourceUrl": "https://www.bbc.co.uk/news/articles/c9j346xg0mkvo?at_medium=RSS&at_campaign=rss",
+      "sourceTitle": "Trump to remove Rwanda and South Africa from US trade deal",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 824
+    },
+    {
       "id": "news-mvzyjrvn",
       "category": "news",
       "title": "Investigators Probe Possible In‑flight Breakup in Florida Learjet Crash",
@@ -889,5 +913,5 @@
       "wordCount": 630
     }
   ],
-  "lastUpdated": "2026-11-03T00:40:08.506Z"
+  "lastUpdated": "2026-11-03T13:46:24.307Z"
 }
