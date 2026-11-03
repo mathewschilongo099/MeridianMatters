@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "news-mvzyjrvn",
+      "category": "news",
+      "title": "Investigators Probe Possible In‑flight Breakup in Florida Learjet Crash",
+      "summary": "The NTSB is examining whether a Learjet 60 disintegrated before its fatal descent near Mar‑a‑Lago, with ice, turbulence and structural failure under review, BBC News reports.",
+      "content": "The U.S. National Transportation Safety Board announced a probe into a fatal Learjet 60 accident that occurred on a Florida roadway less than ten miles from President Donald Trump's Mar‑a‑Lago estate. The board will assess whether components of the aircraft separated before it entered a steep nose‑down plunge that ended in a fiery crater, killing all nine occupants.\n\nThe jet had departed Austin, Texas, bound for the Bahamas on a Sunday morning. Shortly after take‑off, the crew reported encountering precipitation and moderate turbulence, requesting a climb to a higher altitude. Within half a minute, the aircraft began an uncontrolled descent, prompting the pilots to issue a mayday call. The subsequent transmission grew unintelligible, and the final recorded words from the cockpit indicated a loss of time to recover.\n\nAir traffic control audio captured a crew member declaring an emergency, shouting, \"we are in an overspeed condition descending 20,000ft per minute,\" before adding, \"we are going to crash into the ground.\" About thirty‑five seconds later, the last audible phrase was \"we're out of time.\" These statements illustrate the rapid loss of control experienced by the flight crew.\n\nInvestigators are also focusing on environmental factors. The NTSB confirmed that ice and turbulence were present during the flight, and thunderstorms had been reported in the vicinity at the time of the crash. Determining how these conditions may have contributed to the aircraft's behavior will be part of a lengthy investigative process.\n\nThe crash site was Military Trail, a six‑lane commercial road lined with businesses and residences. The impact created a large crater, and debris was scattered across nearby sports fields, storefronts and homes. Officials noted that the pattern of wreckage could indicate that the aircraft broke apart before striking the ground, a hypothesis that will be examined through forensic analysis of the recovered pieces.\n\nAmong the nine victims were a tech entrepreneur, his wife, their two children, a 20‑year‑old copilot, and several other passengers. The entrepreneur, identified as Adam Robinson, traveled with his wife Helen Sharp and their children Emma and Charlie. The other passengers named by family statements were Rachael Reed, Charmi Fehr and Anita Maria Cetina. The pilot, reported in media outlets as Jeffery Gregory, was accompanied by copilot Nathalia Filgueiras, who earned her pilot's licence at the age of 17.\n\nA single ground casualty suffered a leg injury when the aircraft impacted the roadway. Emergency responders worked to extract the injured individual while also securing the crash zone for investigators.\n\nRecovery of the wreckage presents a formidable challenge. Timothy Monville, an air safety investigator with the board, described the effort to retrieve debris from the crater as \"daunting.\" The investigation team includes representatives from the Federal Aviation Administration, the aircraft manufacturer, meteorologists and air‑traffic control experts, all collaborating to piece together the sequence of events.\n\nOne technical question under review is whether a cockpit voice recorder was installed on the Learjet and, if so, whether it can be recovered. The presence of such a device could provide critical insight into the crew’s actions and the aircraft’s performance in the moments before impact.\n\nBackground: The NTSB is an independent federal agency tasked with investigating accidents across all modes of transportation, issuing safety recommendations to prevent future incidents. The Learjet 60 is a midsize business jet commonly used for private and corporate travel, known for its speed and range capabilities.\n\nThe investigation will involve detailed flight‑data analysis, examination of recovered components, and review of weather reports. Flight analysis has already shown that the jet was descending at a rate of hundreds of feet per second before impact, underscoring the severity of the loss of control.\n\nThe crash occurred while President Trump was at Mar‑a‑Lago and had departed on Air Force One earlier that morning, a detail noted in public statements but not directly linked to the accident. The proximity of the crash to the resort has drawn additional public attention to the incident.\n\nAs the NTSB proceeds with its inquiry, officials have emphasized that determining the probable cause will require extensive examination of all available evidence. The board’s findings will be released after the completion of the investigative process, providing a comprehensive account of the factors that led to the tragic loss of life.\n\nBBC News reported on the ongoing investigation, highlighting the board’s focus on potential in‑flight breakup, weather influences, and the challenges of wreckage recovery.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-11-03",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Seaworld-Orlando-Kraken-1629.jpg/1280px-Seaworld-Orlando-Kraken-1629.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageAlt": "Seaworld-Orlando-Kraken-1629",
+      "imageCredit": "Photo: Loadmaster (David R. Tribble) This image was made by Loadmaster (David R. Tribbl / Wikimedia Commons (CC BY-SA 3.0)",
+      "images": [],
+      "tags": [
+        "news"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "BBC News",
+      "sourceUrl": "https://www.bbc.co.uk/news/articles/cm369yy7lw73o?at_medium=RSS&at_campaign=rss",
+      "sourceTitle": "Plane may have broken apart ahead of deadly Florida jet crash, say investigators",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 725
+    },
+    {
       "id": "news-mvzds37f",
       "category": "news",
       "title": "Fake Alerts Hack Air Raid Apps in Ukraine and Russia",
@@ -865,5 +889,5 @@
       "wordCount": 630
     }
   ],
-  "lastUpdated": "2026-11-02T14:58:36.553Z"
+  "lastUpdated": "2026-11-03T00:40:08.506Z"
 }
