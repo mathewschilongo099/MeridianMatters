@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "finance-mw3mhoif",
+      "category": "finance",
+      "title": "Rural Voters Turn Away From Republicans Amid Inflation Concerns",
+      "summary": "A Harris poll for The Guardian found sharp drops in Republican support among rural voters, driven by high fuel costs and a perceived affordability crisis, contributing to the party’s losses in the midterm elections.",
+      "content": "A poll commissioned by the Harris Poll for The Guardian revealed a dramatic erosion of support for the Republican Party among voters in rural areas, a group that had previously formed a cornerstone of former President Donald Trump’s electoral base. The survey, conducted in the weeks leading up to the November midterm elections, linked the decline to widespread anger over rising living costs, particularly the price of gasoline and diesel.\n\nAcross the nation, an overwhelming majority of respondents – 95% – said they were living through an affordability crisis, a sentiment that was amplified by steep increases in gas and grocery prices. By the time the election approached, 61% of voters believed the country was in a recession, even though official metrics did not confirm a technical recession.\n\nThe impact of inflation was felt in a range of occupations that rely heavily on transportation. Loggers in Maine reported that tariffs on Canadian wood products were further weakening an already fragile industry. In Texas, drivers with three‑hour commutes were spending roughly $400 each month on fuel, while Midwestern farmers described how higher diesel costs were compounding the challenges of a drought‑affected growing season.\n\nRepublican confidence in the economy also slipped sharply. In February, just before the conflict with Iran began, 49% of Republicans said the economy was improving. By October, that share had fallen to 28%, indicating a loss of optimism among the party’s own voters.\n\nRural voters were especially likely to say that rising gas prices were damaging their finances and that they were operating in “economic survival mode.” They were also marginally more inclined than urban and suburban voters to view corruption as a bigger problem for Republicans, suggesting a perception that elected officials were using their positions for personal gain.\n\nThe poll showed that, in the month before the midterms, the proportion of rural Americans who thought the economy was getting worse rose by 17%, compared with a 5% increase among suburban voters and a 3% rise among urban voters. This widening gap underscored the particular strain felt in less densely populated areas where long‑distance travel is routine.\n\nAmid this backdrop, former President Trump attempted to project a more optimistic narrative. \"I’ve traveled all across the country, spoken at all of these rallies I’ve done over the last two and a half weeks, and America is ready to go. They’re ready to vote,\" he said at a rally near the Lincoln Memorial, adding that he hoped voters would \"do the right thing.\" The contrast between his upbeat remarks and the poll’s depiction of everyday hardship was stark.\n\nWhen voters went to the polls, the Republican losses in competitive races from Maine to Texas translated into a Democratic majority in Congress for the next two years. The outcome highlighted the electoral cost of the affordability crisis that many voters said had dominated their daily lives.\n\nDemocratic leaders pledged to focus on issues that dominated the campaign, including the administration’s immigration policies, perceived corruption in the White House, rising health‑care costs, and the broader economy, with particular attention to high prices.\n\nRepublican figures began to assess the role that price pressures played in the defeat. Senator JD Vance remarked that the loss was the \"cost to pay\" for the war with Iran, emphasizing that any honest discussion about the party’s future must start there.\n\nEven before the midterms, polls indicated uncertainty about which party could resolve the affordability crisis. When asked which party offered a solution, 34% of respondents said neither did, while Democrats edged ahead of Republicans with 27% to 24% respectively.\n\nBackground: Inflation describes a sustained increase in the general price level of goods and services, which erodes the purchasing power of money. Rural voters typically reside in areas with low population density, often relying on personal vehicles for long commutes to work, school, and essential services.\n\nBackground: Economic sentiment surveys measure how individuals perceive the health of the economy, including their personal financial situation and expectations for the future. Such perceptions can influence voting behavior, especially when voters feel that basic necessities are becoming unaffordable.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-11-05",
+      "image": "",
+      "imageAlt": "",
+      "imageCredit": "",
+      "images": [],
+      "tags": [
+        "finance"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "The Guardian",
+      "sourceUrl": "https://www.theguardian.com/business/2026/nov/05/former-trump-voters-economy",
+      "sourceTitle": "Rural voters were feeling left behind before the midterms, poll shows",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 678
+    },
+    {
       "id": "health-mw2qnqng",
       "category": "health",
       "title": "Pharma Companies Test Space‑Based Crystal Growth for Future Cancer Drugs",
@@ -985,5 +1009,5 @@
       "wordCount": 630
     }
   ],
-  "lastUpdated": "2026-11-04T23:19:57.136Z"
+  "lastUpdated": "2026-11-05T14:10:21.364Z"
 }
