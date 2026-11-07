@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "news-mw6dwwle",
+      "category": "news",
+      "title": "Oil Traders Divert Russian Diesel Shipments After US‑Russia Deal",
+      "summary": "Several tankers bound for the United States have altered course, raising doubts about President Trump’s agreement with Vladimir Putin to release Russian diesel, while sanctions concerns linger.",
+      "content": "Al Jazeera reports that three of the four tankers loaded with Russian diesel after President Donald Trump’s October arrangement with Vladimir Putin have changed their intended routes, leaving the United States without any of the promised fuel. The deal, announced shortly after a phone call between the two leaders, pledged more than 300,000 tonnes of diesel for immediate delivery to U.S. and global markets, followed by additional volumes in the weeks that followed. Despite the temporary exemption granted by the U.S. Treasury’s Office of Foreign Assets Control, none of the cargoes have arrived on the U.S. Atlantic coast.\n\nThe first vessel, the Talisman, and the second, the Leruo, departed the Baltic port of Primorsk with the U.S. East Coast listed as their destination. Tracking data from marine‑analytics firm Kpler and the vessel‑monitoring platform MarineTraffic showed that, as of Thursday, one tanker was rerouted toward Brazil while the other headed into the Mediterranean Sea. A third ship, still positioned in the North Atlantic, altered its destination from New York after receiving new orders, leaving its unloading point uncertain. The Financial Times also noted that the tanker Beast, which had been sanctioned and loaded at Primorsk in late October, was sailing toward the United States and was currently signaling an Atlantic route.\n\nLong‑range product tankers such as these can transport up to about 100,000 tonnes of diesel per voyage, meaning each shipment represents a fraction of the total volumes discussed in the agreement. The plan called for an additional 500,000 tonnes in November and a further million tonnes shortly thereafter, according to statements made by President Trump on his Truth Social platform. The arrangement permits the sale, delivery, unloading and import of Russian diesel until early April, effectively reversing the ban on Russian energy imports that the United States imposed after Moscow’s full‑scale invasion of Ukraine in February 2022.\n\nAnalysts caution that the limited amount of diesel that has actually been dispatched is unlikely to ease the sharp rise in U.S. fuel prices, which have hovered near $6 per gallon for retail diesel, roughly double pre‑war levels. Aarathi Krishnan, chief executive of Raksha Intelligence, told Al Jazeera that the first tanker’s cargo equates to “roughly two hours of US distillate consumption” and would have “very little difference to national supply” even if it arrived as scheduled.\n\nThe broader context involves a complex regulatory environment. While the Treasury’s temporary exemption allows the sale of Russian diesel that would normally be prohibited, Congress has maintained its ban on Russian energy imports, creating uncertainty for market participants. New Jersey Governor Mikie Sherrill sent a letter to port and terminal operators in her state urging them to reject any ships carrying the fuel, warning that attempts to profit from what she described as illegal trade could result in severe penalties. Lawmakers have also cautioned banks, port authorities and fuel distributors that handling the imports could expose them to civil or criminal liability and trigger future congressional investigations.\n\nBackground: Diesel is a middle‑distillate fuel derived from crude oil and refined in large complexes. It is used in transportation, industry and power generation, and its market is closely linked to global oil production, refining capacity and geopolitical events. Sanctions regimes can restrict the ability of sanctioned producers to sell their products abroad, often requiring special licenses or exemptions for transactions to proceed legally.\n\nThe hesitation among traders appears rooted in the risk of violating sanctions or facing legal challenges. Matt Smith, an analyst at Kpler, explained to the Associated Press that regulatory and sanctions concerns are likely to keep the cargoes from being discharged on the U.S. Atlantic coast, noting that “it’s clear there’s hesitancy here in bringing these barrels onshore just because of the implications of doing so.” Kremlin spokesman Dmitry Peskov asserted that all the diesel would eventually find buyers, while Putin’s special envoy Kirill Dmitriev dismissed reports of the diversions as false, claiming that tankers destined for the United States continue on course.\n\nThe situation underscores the tension between the executive branch’s attempt to secure additional fuel supplies and the legislative branch’s insistence on maintaining a hard line against Russian energy. The temporary exemption remains the only legal pathway for the shipments, but without clear guidance on pricing, payment terms or the identities of the companies involved, many market participants are opting to reroute the vessels to destinations perceived as less risky. As the diverted tankers head toward Brazil, the Mediterranean and possibly other ports, the United States continues to rely on existing domestic and allied supplies to meet its diesel demand, while the broader debate over the legality and efficacy of the Trump‑Putin diesel deal persists.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-11-07",
+      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Sergey_Sobyanin2010.jpg/1280px-Sergey_Sobyanin2010.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "imageAlt": "Sergey Sobyanin2010",
+      "imageCredit": "Photo: mos.ru / Wikimedia Commons (CC BY 4.0)",
+      "images": [],
+      "tags": [
+        "news"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "Al Jazeera",
+      "sourceUrl": "https://www.aljazeera.com/news/2026/11/7/why-are-oil-traders-refusing-to-buy-russian-diesel-after-trump-putin-deal?traffic_source=rss",
+      "sourceTitle": "Why are oil traders refusing to buy Russian diesel after Trump-Putin deal?",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 772
+    },
+    {
       "id": "news-mw5kd9wt",
       "category": "news",
       "title": "Global equities tumble as AI concerns follow US midterm win",
@@ -1129,5 +1153,5 @@
       "wordCount": 630
     }
   ],
-  "lastUpdated": "2026-11-06T22:49:28.660Z"
+  "lastUpdated": "2026-11-07T12:38:14.644Z"
 }
