@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "news-mwasb4gx",
+      "category": "news",
+      "title": "Spain Considers TikTok Suspension After Child Abuse Probe Finds Thousands of Illegal Videos",
+      "summary": "An independent study by Maldita.es uncovered over a thousand child sexual abuse videos on TikTok, prompting Spain’s youth ministry to seek explanations and contemplate a platform ban.",
+      "content": "Al Jazeera reports that Spanish authorities are weighing the possibility of suspending TikTok after an independent investigation revealed a large volume of child sexual abuse material on the service. The probe, carried out by the nonprofit foundation Maldita.es, focused on the platform during a 35‑day monitoring period in September and October.\n\nThe foundation said it identified more than 1,000 videos depicting child sexual abuse, which together had been viewed around 48 million times. In the same period it detected over 20,000 profiles it classified as belonging to suspected paedophiles, including roughly 7,000 accounts based in Spain. The organization compiled a list of about 26,000 accounts it believed were involved in illicit activity and forwarded the information to law‑enforcement agencies.\n\nMaldita.es examined user profiles, comments and live broadcasts, creating its own accounts to test how the recommendation system responded. Within three days, the algorithm suggested 19 livestreams featuring minors, with 15 of those appearing in a single morning, all streamed from school settings. The report highlighted how the platform’s recommendation engine can surface content that puts children at risk.\n\nOne documented case involved a livestream by a 10‑year‑old girl in Spain. During the broadcast, an adult male left suggestive remarks, illustrating how minors can be directly exposed to sexualized attention while using the service. The foundation said such interactions are facilitated by TikTok’s gift system, where viewers can send virtual items that cost real money, and the platform retains a portion of those payments.\n\n“Abuse is not hidden away in a little corner and it is not hard to find,” said Clara Jimenez Cruz, co‑founder and chief executive of Maldita.es. She argued that the platform’s design amplifies harmful content rather than containing it.\n\nThe Spanish Ministry of Youth and Children has formally requested explanations from TikTok’s parent company, ByteDance, and indicated that a suspension of the service is under consideration. In a post on the social network X, the ministry said it had asked prosecutors to act on the alleged abuse cases and that Minister Sira Rego had called for an urgent meeting with TikTok representatives in Spain.\n\nThe investigation broke down the offending accounts into several categories. It identified 231 profiles that posted 1,183 explicit items, 780 accounts that appeared to be used to attract buyers, and more than 10,000 accounts that solicited sexual images in comment sections. When all categories were combined, the foundation reported a total of roughly 26,000 suspect accounts.\n\n“Material you would expect to find only on the dark web is on TikTok,” the report stated, underscoring concerns that the platform’s safeguards are insufficient to prevent the spread of illegal content.\n\nAccording to the foundation, TikTok removed only about one‑tenth of the material it flagged and blocked roughly a quarter of the illegal posts identified in Spain. The company has faced a series of lawsuits and investigations worldwide over allegations that it fails to protect minors, claims it continues to deny.\n\nThe European Union has also warned TikTok that its personalized “For You” feed must be altered to eliminate harmful design features, or the platform could face substantial fines under the bloc’s digital content regulations. This pressure adds to the scrutiny the service is experiencing across multiple jurisdictions.\n\nBackground: TikTok’s recommendation engine, often referred to as the “For You” feed, uses a combination of user interactions, video attributes and device information to surface content that is likely to keep users engaged. The system continuously updates its suggestions based on real‑time behavior, meaning that once a type of content gains traction, it can be rapidly amplified to a wider audience.\n\nBackground: Online platforms that host user‑generated video and livestream content are required in many jurisdictions to monitor and remove material that depicts sexual exploitation of children. Failure to do so can result in legal liability for the platform and may trigger regulatory actions aimed at protecting vulnerable users.\n\nThe Spanish government’s next steps will depend on the outcome of discussions with TikTok and any further evidence presented by law‑enforcement agencies. The situation highlights the growing challenge of policing large‑scale social media services for illegal content while balancing the platform’s role in digital communication.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-11-10",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/9/97/Tiktok_Viral_Feta_pasta.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "imageAlt": "Tiktok Viral Feta pasta",
+      "imageCredit": "Photo: Gabbybratcher / Wikimedia Commons (CC BY-SA 4.0)",
+      "images": [],
+      "tags": [
+        "news"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "Al Jazeera",
+      "sourceUrl": "https://www.aljazeera.com/news/2026/11/10/spanish-probe-finds-over-20000-suspected-paedophile-profiles-on-tiktok?traffic_source=rss",
+      "sourceTitle": "Spain mulls TikTok suspension after investigation into child sex abuse videos",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 686
+    },
+    {
       "id": "finance-mwa02tiz",
       "category": "finance",
       "title": "Nvidia CEO under internal probe after alleged spy affair",
@@ -1175,31 +1199,7 @@
       "aiAssisted": true,
       "editorChecked": true,
       "wordCount": 766
-    },
-    {
-      "id": "finance-mvnpofqt",
-      "category": "finance",
-      "title": "Labour explores four tax routes to fund budget without raising income tax",
-      "summary": "BBC News outlines four potential revenue measures Labour could use to rebuild the Treasury’s cash buffer while keeping income tax, VAT and NI unchanged.",
-      "content": "The chancellor’s \"headroom\" – the cash buffer that helps the government meet fiscal rules and limit borrowing – has been under pressure, with economists estimating it may have fallen from around £24bn to as low as £11bn in recent months. Restoring that buffer is a key objective for the upcoming Budget, and Labour’s 2024 election manifesto has pledged not to increase income tax, VAT or National Insurance rates.\n\nBackground: \"Headroom\" refers to the amount of fiscal space a government has before it must take action to stay within its own spending limits. When the buffer shrinks, the Treasury must either cut spending or find new revenue sources to avoid breaching its rules.\n\nOne avenue under discussion is raising the surcharge that banks pay on corporation tax. Tax Policy Associates estimates that increasing the surcharge from 3% to 5.5% could generate an additional £1bn to £2bn each year. The higher levy would cut the profits banks can distribute to shareholders, potentially affecting wealthy investors and, indirectly, ordinary savers whose pension funds hold bank shares. Research suggests banks might shift part of the burden onto customers through lower savings rates or higher borrowing costs.\n\nBackground: The corporation tax surcharge is an extra percentage added to the standard corporate tax rate for banks, intended to reflect the stability they provide to the financial system. Adjusting the surcharge changes the overall tax bill paid by banking institutions.\n\nA second proposal targets electronic gaming machines found in betting shops and adult gaming centres. Former Prime Minister Gordon Brown has urged the chancellor to increase the tax on these machines, which can pay out up to £500 per game. The Social Market Foundation estimates that doubling the tax from 20% to 40% could raise between £275m and £460m annually, depending on how gamblers respond. Critics warn that the extra cost could be passed to players through poorer odds, while the gambling industry argues it could force betting shops to close, threatening jobs in related sectors such as horse racing.\n\nThe third measure focuses on online marketplaces. The Treasury says it loses about £12bn a year in VAT revenue because some sellers on platforms like Amazon, eBay and Temu fail to comply with VAT rules. By making the platforms responsible for collecting VAT from retailers using their services, the government hopes to close part of the \"VAT tax gap\". Analysts suggest the change could bring in roughly £1bn a year, with Amazon itself estimating a possible £700m contribution.\n\nTogether, the bank surcharge increase, the gambling machine tax hike and the online‑marketplace VAT collection could raise a maximum of around £3.5bn annually. While this would help rebuild the chancellor’s cash buffer, it remains a modest sum compared with the broader fiscal challenges.\n\nLabour also faces pressure to fund rising living costs and defence spending, all while adhering to its pledge not to raise the main consumption taxes. Prime Minister Andy Burnham has called for a \"fair and lasting\" reduction to the UK’s welfare bill, and opposition parties are urging savings from working‑age benefits. The Conservatives claim they could save £36bn a year by tightening welfare access, and Reform suggests £50bn could be saved, though independent analysts question the realism of such large cuts.\n\nWorking health and sickness benefits have risen sharply since the Covid pandemic, with the Office for Budget Responsibility projecting the cost to climb from £68bn this year to £81bn by 2031. Labour leaders Keir Starmer and Rachel Reeves previously sought to trim £5bn from these benefits by 2030, but a revolt among backbench MPs forced a reversal. Experts note that any genuine savings in the working‑age welfare budget would likely require upfront investment to help claimants move into employment, which could offset immediate Treasury gains.\n\nThe debate over how to restore the Treasury’s headroom illustrates the tension between fiscal prudence and the political commitment to protect low‑ and middle‑income households from higher taxes. As the Budget approaches, the chancellor will need to balance these competing demands while delivering the revenue needed to meet the government’s borrowing targets and fund priority spending.",
-      "author": "MeridianMatters Newsroom",
-      "date": "2026-10-25",
-      "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Kerry_Barker%2C_Labour_2021_candidate_for_Avon_%26_Somerset_Police_and_Crime_Commissioner_at_his_desk.jpg/1280px-Kerry_Barker%2C_Labour_2021_candidate_for_Avon_%26_Somerset_Police_and_Crime_Commissioner_at_his_desk.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
-      "imageAlt": "Kerry Barker, Labour 2021 candidate for Avon & Somerset Police and Crime Commissioner at his desk",
-      "imageCredit": "Photo: Gusdeadman (Andrew Milton) / Wikimedia Commons (CC BY-SA 4.0)",
-      "images": [],
-      "tags": [
-        "finance"
-      ],
-      "featured": true,
-      "status": "published",
-      "sourceName": "BBC News",
-      "sourceUrl": "https://www.bbc.co.uk/news/articles/c65yn9p55np2o?at_medium=RSS&at_campaign=rss",
-      "sourceTitle": "Four ways Labour could raise money in the Budget without hiking income tax",
-      "aiAssisted": true,
-      "editorChecked": true,
-      "wordCount": 676
     }
   ],
-  "lastUpdated": "2026-11-10T01:17:19.704Z"
+  "lastUpdated": "2026-11-10T14:31:16.832Z"
 }
