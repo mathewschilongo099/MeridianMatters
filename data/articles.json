@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "finance-mwgyfmri",
+      "category": "finance",
+      "title": "Nationwide FAA Ground Stop Sends US Airports into Turmoil",
+      "summary": "A sudden FAA-ordered ground stop halted flights across the United States, leaving thousands of travelers stranded and prompting widespread confusion at major hubs.",
+      "content": "The Federal Aviation Administration issued a nationwide ground stop on a Friday afternoon, forcing all departures to cease and plunging airports from coast to coast into disorder. Passengers who were already in terminals or on board aircraft found themselves in an unexpected limbo as the directive took effect, with airlines scrambling to communicate the evolving situation.\n\nAt New York’s John F. Kennedy International Airport, the disruption was palpable. Steve Honberger, who was returning to Portland with his family, described how his flight was still at the gate when the shutdown was announced. He recalled the crew’s uncertainty, saying, \"They didn’t seem to know what’s happening, and they wanted to hold off as long as possible,\" and noted that the aircraft remained parked for more than an hour before passengers were allowed to deplane and seek alternative arrangements.\n\nOther travelers shared similar stories of uncertainty. Rashid Kahn, bound for Miami, recalled hearing about the ground stop on the news and receiving a vague estimate from his airline that the flight might depart late in the evening. Tom Rolenaitis, who was transporting a show dog back to Finland, expressed frustration at the interruption to a three‑day itinerary. An unnamed flight attendant on an American Airlines service to Barcelona reported a brief delay notice, while a fellow crew member remained hopeful that the situation would resolve without further incident.\n\nAs the afternoon progressed, some international flights began to board, prompting applause from passengers at the gates. An airline representative observed that only inbound international services were being cleared to land, indicating a partial restoration of operations.\n\nThe FAA’s notice cited communication problems at regional air‑traffic control centers as the trigger for the stop. Approximately four hours later, the agency issued an advisory indicating that the restriction was being lifted, allowing airlines to resume departures where possible.\n\nThe aftermath of the lift generated additional confusion. Larson Welsh, traveling from Paris to Las Vegas, described how his flight was first cancelled, then re‑scheduled for an early‑morning departure via an automated kiosk, only to encounter staff who appeared unaware of the new itinerary.\n\nFlight tracking data showed more than ten thousand delays and nearly fifteen hundred cancellations linked to the event, while over a thousand aircraft were en route to the United States when the stop was announced. These figures underscore the scale of the disruption for both domestic and inbound traffic.\n\nNational ground stops are exceedingly rare. Prior to this incident, only two such orders had been issued: one following the September 2001 terrorist attacks and another in early 2023 after a communications failure. The rarity of the measure highlights the seriousness with which the FAA regarded the underlying technical issue.\n\nThe ripple effects extended beyond commercial passengers. Sports leagues, including the NBA, NHL, and collegiate programs, faced logistical challenges as teams and officials struggled to reach venues for a busy weekend of games. The uncertainty around referee travel added another layer of complication for organizers.\n\nBackground: A ground stop is an air‑traffic control directive that temporarily halts departures from a specified area or, in the case of a national order, from all airports within a country. The purpose is to manage air‑space capacity and ensure safety when the system cannot safely handle the usual volume of traffic, often due to technical failures or extreme weather.\n\nBackground: When flights are cancelled or delayed, airlines typically use automated kiosks, online platforms, and customer‑service desks to rebook passengers on later services. The process can involve reassigning seats, issuing new boarding passes, and sometimes arranging accommodation for stranded travelers.\n\nBack at JFK, frustration was evident. A passenger identified only as Andy lamented that his flight to California had been cancelled without any information or rebooking options, adding, \"It’s frustrating. And I’m pissed.\" His comments reflected the broader sentiment of travelers who missed personal events and faced uncertain onward travel.\n\nDespite the challenges, some passengers tried to maintain a positive outlook. Honberger noted that seeing other aircraft still on the tarmac offered a measure of reassurance, and he was able to secure a hotel room for the night, describing the experience as a mix of luck and resilience.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-11-14",
+      "image": "",
+      "imageAlt": "",
+      "imageCredit": "",
+      "images": [],
+      "tags": [
+        "finance"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "The Guardian",
+      "sourceUrl": "https://www.theguardian.com/us-news/2026/nov/13/us-airports-flight-stoppage",
+      "sourceTitle": "‘It’s frustrating’: chaos at US airports as stoppage grinds travel plans to a halt",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 689
+    },
+    {
       "id": "sports-mwgf2znw",
       "category": "sports",
       "title": "English teen boxer barred from World Championships after sex‑test oversight",
@@ -1175,31 +1199,7 @@
       "aiAssisted": true,
       "editorChecked": true,
       "wordCount": 654
-    },
-    {
-      "id": "finance-mvs2xtsm",
-      "category": "finance",
-      "title": "Residents complain as delivery drones raise new noise concerns",
-      "summary": "Delivery drones are proliferating across US neighborhoods, prompting complaints over a distinctive buzz and spurring efforts to develop quieter technology, according to BBC News.",
-      "content": "Ashley Schmidt, a 44‑year‑old administrative assistant living in North Garland, a suburb of Dallas, has stopped spending time in her garden and giving up cycling trips to local parks. The change follows her inability to tolerate the sound of delivery drones that regularly pass overhead, dropping parcels for neighbours.\n\nShe describes the experience as a persistent, irritating buzz that triggers a fight‑or‑flight reaction. \"They emit this very annoying buzz. It triggers my fight or flight response,\" Schmidt said, adding that the noise can be heard as the drones approach, while they are directly above, and again as they depart.\n\nSchmidt’s frustration reflects a broader trend as companies such as Amazon and Walmart expand drone delivery services. Amazon’s Prime Air programme is extending operations to nearly five hundred cities and towns, delivering items that fit into a space comparable to a shoe box, and it has already begun serving customers in and around Darlington in northern England. Smaller operators are also emerging, offering on‑demand aerial deliveries of food items from local pizza shops or ice‑cream parlours in various US cities.\n\nThe acoustic impact of these low‑altitude flights is drawing attention from researchers. Antonio Torija Martinez, a professor of acoustic engineering and psychoacoustics at the University of Salford, notes that the drone’s whine is especially noticeable even when overall ambient sound levels are low. He explains that, unlike aircraft that cruise at higher elevations, drones often fly directly over residential areas, exposing communities that have not previously experienced significant aircraft noise and may therefore be more sensitive to changes in their local soundscape.\n\nResearch cited by Torija Martinez indicates that people react more strongly to noises they perceive as novel, intrusive, or frequent. Those who benefit from drone deliveries may be less disturbed, but he warns that complaints are likely to increase as the sector grows.\n\nIn the United States, commercial drone operations fall under the jurisdiction of the Federal Aviation Administration. The agency has faced criticism for permitting noisy delivery flights, while maintaining that operators and local community leaders bear primary responsibility for addressing resident concerns.\n\nBackground: Noise perception is shaped by a combination of acoustic characteristics such as frequency and amplitude, as well as psychological factors including expectation and the perceived source of the sound. Sudden, high‑frequency sounds like the whine of a rotor can cut through background hum, making them stand out to listeners.\n\nOne avenue being explored to reduce the nuisance is technological redesign. Greenjets, a London‑based startup, has created a propulsion system that encloses spinning blades within a pod, slowing rotor speed and employing vibration‑dampening materials. The company claims this approach can cut drone noise by at least two thirds compared with conventional designs that expose open propellers to the airflow.\n\nThe quieter technology has found applications beyond residential delivery. Police and harbour security teams in Germany have adopted Greenjets’ system, and conservationists in Africa are using it to monitor poachers without alerting them. Military operators also value reduced acoustic signatures; the US Special Forces are reportedly experimenting with low‑noise solutions, although speed remains the primary priority for larger combat drones used in the Russia‑Ukraine conflict.\n\nEntrepreneur Greg Sharrow’s path to quieter rotors began with a 2012 project to broadcast a classical music performance. Needing an aerial view of a violinist, he realized that the propeller tips generated most of the noise. This insight led him to design a tipless, loop‑shaped blade, initially testing the concept in water before adapting it for aerial use. His firm, Sharrow Engineering, now focuses on “ultra‑quiet” drone rotors and reports that the technology has been validated as dramatically quieter in drone applications.\n\nDelivery companies themselves are pursuing noise reductions. An Amazon spokesperson reported that recent drone models incorporate custom‑designed propellers that produce roughly half the perceived sound of earlier generations and emit a milder tone. Wing, the drone arm that services Walmart deliveries, claims its propellers are shaped to minimise noise and that it varies flight paths to avoid repeatedly overflying the same household.\n\nFor Schmidt, the only satisfactory remedy would be a pause to the drone service in her neighbourhood. She says she would like deliveries to stop until the companies can eliminate the nuisance entirely.\n\nAs drone fleets expand, experts anticipate that the frequency of complaints will rise, mirroring the growing presence of these aerial vehicles in everyday life. The challenge of balancing rapid delivery expectations with community acoustic comfort remains a key issue for regulators, manufacturers, and service providers alike.",
-      "author": "MeridianMatters Newsroom",
-      "date": "2026-10-28",
-      "image": "",
-      "imageAlt": "",
-      "imageCredit": "",
-      "images": [],
-      "tags": [
-        "finance"
-      ],
-      "featured": false,
-      "status": "published",
-      "sourceName": "BBC News",
-      "sourceUrl": "https://www.bbc.co.uk/news/articles/ck1exgejq3xvo?at_medium=RSS&at_campaign=rss",
-      "sourceTitle": "'An annoying buzz': The search for stealthier drones",
-      "aiAssisted": true,
-      "editorChecked": true,
-      "wordCount": 742
     }
   ],
-  "lastUpdated": "2026-11-14T13:07:06.191Z"
+  "lastUpdated": "2026-11-14T22:05:41.468Z"
 }
