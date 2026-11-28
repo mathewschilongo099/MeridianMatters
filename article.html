@@ -81,7 +81,7 @@
   <script src="js/main.js"></script>
   <script>
     (function () {
-      const { esc, categoryMap, formatDate, readingTime } = window.MM;
+      const { esc, categoryMap, fallbackImage, formatDate, readingTime } = window.MM;
 
       // Article content is plain text with blank-line separated paragraphs
       // (matches the admin panel's "Full content" field) — escape, then wrap in <p>.
@@ -151,7 +151,7 @@
           <h1>${esc(article.title)}</h1>
           ${article.summary ? `<p class="article-dek">${esc(article.summary)}</p>` : ''}
           <div class="article-meta">${meta}</div>
-          ${article.image ? `<img class="article-hero-image" src="${esc(article.image)}" alt="${esc(article.imageAlt || article.title)}" decoding="async">` : ''}
+          <img class="article-hero-image" src="${esc(article.image || fallbackImage(article.category))}" alt="${esc(article.image ? (article.imageAlt || article.title) : '')}" decoding="async">
           <div class="article-body">${renderBody(article.content)}</div>
           ${shareRow(article)}
           <a class="back-link" href="index.html">← Back to homepage</a>
