@@ -18,6 +18,12 @@
     finance: 'Finance'
   };
 
+  // Neutral per-category artwork shown when a story has no verified photo,
+  // so every story still has a picture and never shows a wrong one.
+  function fallbackImage(category) {
+    return 'images/fallback-' + (categoryMap[category] ? category : 'news') + '.svg';
+  }
+
   function formatDate(dateStr) {
     const d = new Date(dateStr);
     if (isNaN(d)) return '';
@@ -113,7 +119,7 @@
     const categoryLabel = categoryMap[article.category] || article.category;
     const imageContent = article.image
       ? `<img src="${esc(article.image)}" alt="${esc(article.imageAlt || article.title)}" loading="lazy" decoding="async">`
-      : esc(article.imageAlt || categoryLabel);
+      : `<img src="${esc(fallbackImage(article.category))}" alt="" loading="lazy" decoding="async">`;
 
     return `
       <a href="article.html?id=${encodeURIComponent(article.id)}" class="article-card" data-id="${esc(article.id)}">
@@ -229,10 +235,13 @@
 
     if (lead) {
       const label = categoryMap[featured.category] || featured.category;
+      const heroImg = featured.image
+        ? `<img src="${esc(featured.image)}" alt="${esc(featured.imageAlt || featured.title)}" fetchpriority="high" decoding="async">`
+        : `<img src="${esc(fallbackImage(featured.category))}" alt="" fetchpriority="high" decoding="async">`;
       lead.innerHTML = `
         <span class="hero-badge">${esc(label)}</span>
         <a href="article.html?id=${encodeURIComponent(featured.id)}">
-          ${featured.image ? `<div class="hero-image"><img src="${esc(featured.image)}" alt="${esc(featured.imageAlt || featured.title)}" fetchpriority="high" decoding="async"></div>` : ''}
+          <div class="hero-image">${heroImg}</div>
           <h1>${esc(featured.title)}</h1>
           <p>${esc(featured.summary)}</p>
         </a>
@@ -526,6 +535,7 @@
   window.MM.setActiveNav = setActiveNav;
   window.MM.esc = esc;
   window.MM.categoryMap = categoryMap;
+  window.MM.fallbackImage = fallbackImage;
   window.MM.formatDate = formatDate;
   window.MM.readingTime = readingTime;
 })();
