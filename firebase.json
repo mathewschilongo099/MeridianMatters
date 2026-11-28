@@ -6,7 +6,9 @@
       "**/.*",
       "**/node_modules/**",
       ".github/**",
-      "scripts/**"
+      "scripts/**",
+      "README.md",
+      "LICENSE"
     ],
     "headers": [
       {
