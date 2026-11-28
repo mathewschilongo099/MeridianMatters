@@ -1,6 +1,30 @@
 {
   "articles": [
     {
+      "id": "health-mwzpuuxk",
+      "category": "health",
+      "title": "NHS chief warns of sharp rise in flu admissions as vaccine uptake lags",
+      "summary": "Health officials report an 80% jump in flu hospitalisations and urge at‑risk groups to be vaccinated, while NHS leaders highlight staffing pressures and the need for better infection control.",
+      "content": "A rapid increase in severe influenza cases has prompted England’s health authorities to call for immediate vaccination of people most vulnerable to the virus. The UK Health Security Agency (UKHSA) said that hospital admission rates for flu have risen by almost 80% in the past week, reaching the highest level for this period since before the Covid pandemic. The surge is occurring as the country moves toward the winter months, a time traditionally associated with higher respiratory illness rates.\n\nVaccination coverage remains below expected levels. Among those aged 65 and over, just under 68% have received the flu jab, a figure lower than the usual uptake at this stage of the season. For younger adults in clinical risk groups – an estimated 9.5 million people under 65 with conditions such as chronic lung disease, kidney or liver disease, and diabetes – only 34% had been vaccinated by 22 November, leaving nearly seven million without the recommended protection.\n\nSir Jim Mackey, the outgoing chief executive of NHS England, highlighted the strain on hospital capacity during his remarks at the NHS Alliance autumn conference. He recalled being asked to wear a mask during a hospital visit, describing the experience as “a bit of a shock”. He added, \"I think we have more beds occupied with flu than we did this time last year, as we're just about going to that horrible spike in flu,\" underscoring the pressure on inpatient services. Sir Mackey also criticised the practice of corridor care, calling it \"embedded\" in parts of the health service and stressing that it compromises both safety and dignity for patients.\n\nSuzanna McDonald, who leads the UKHSA’s flu programme, identified the H1N1 strain as a key driver of the current rise. Speaking on BBC Radio 4’s Today programme, she said the strain \"does seem to have picked up a few more changes that we would have expected over the season\". She noted that last year’s vaccine remained effective despite a drifted strain, offering reassurance about the protective value of the current formulation.\n\nThe NHS Alliance chief executive, Sir Ciaran Devane, warned that an early and intense flu season could add further pressure to a health service already stretched by summer heatwaves. He said the timing of the surge makes it difficult to predict when the peak will occur, but acknowledged that any additional demand could exacerbate existing challenges.\n\nBackground: Seasonal influenza is caused by viruses that mutate regularly, requiring annual vaccine updates to match the most prevalent strains. The vaccine works by stimulating the immune system to produce antibodies, reducing the risk of severe disease and hospitalisation. In the UK, the flu jab is offered free of charge to older adults, people with certain medical conditions, pregnant women, and children in specific age groups. The nasal spray version is approved for two‑ and three‑year‑olds, while school‑aged children typically receive the injection at school, with catch‑up options available in pharmacies.\n\nPublic health messaging continues to stress basic hygiene measures. McDonald urged anyone with respiratory symptoms to wash hands with warm soapy water, cover coughs and sneezes with an elbow or tissue, and stay at home to protect higher‑risk individuals. She also reminded the public that thousands of deaths are attributed to flu each year, reinforcing the importance of vaccination for both personal and community health.\n\nUptake among young children remains modest. Just over a third of toddlers in England have received the vaccine this autumn, and overall 39% of those eligible for the nasal spray have been vaccinated. The programme allows two‑ and three‑year‑olds to receive the spray free of charge at GP surgeries and some community pharmacies, with school‑age children normally vaccinated at school and a pharmacy catch‑up starting on 1 December for those who missed it.\n\nThe current situation mirrors concerns from the previous year, when an early rise in flu cases prompted anxiety about potential overload of NHS services during the Christmas period. Although the outbreak peaked earlier than feared last season, officials caution that this year’s trajectory remains uncertain. An ageing population and a broader increase in patients with multiple health conditions are also contributing to heightened demand on hospital resources.\n\nBBC News reported that officials do not yet know when the flu peak will be reached, but they expect levels to climb further as indoor gatherings increase around the holidays. The combination of rising admissions, lower-than-expected vaccine coverage, and ongoing staffing pressures underscores the urgent call for vulnerable groups to receive the flu jab and for hospitals to reinforce infection‑control practices.",
+      "author": "MeridianMatters Newsroom",
+      "date": "2026-11-28",
+      "image": "",
+      "imageAlt": "",
+      "imageCredit": "",
+      "images": [],
+      "tags": [
+        "health"
+      ],
+      "featured": true,
+      "status": "published",
+      "sourceName": "BBC News",
+      "sourceUrl": "https://www.bbc.co.uk/news/articles/cwvg2ndxdjr2o?at_medium=RSS&at_campaign=rss",
+      "sourceTitle": "NHS boss warns of 'horrible spike' in flu as hospital admissions surge",
+      "aiAssisted": true,
+      "editorChecked": true,
+      "wordCount": 751
+    },
+    {
       "id": "news-mwz6n6hu",
       "category": "news",
       "title": "Ukraine endures freezing winter amid relentless missile attacks",
@@ -1175,31 +1199,7 @@
       "aiAssisted": true,
       "editorChecked": true,
       "wordCount": 721
-    },
-    {
-      "id": "news-mwasb4gx",
-      "category": "news",
-      "title": "Spain Considers TikTok Suspension After Child Abuse Probe Finds Thousands of Illegal Videos",
-      "summary": "An independent study by Maldita.es uncovered over a thousand child sexual abuse videos on TikTok, prompting Spain’s youth ministry to seek explanations and contemplate a platform ban.",
-      "content": "Al Jazeera reports that Spanish authorities are weighing the possibility of suspending TikTok after an independent investigation revealed a large volume of child sexual abuse material on the service. The probe, carried out by the nonprofit foundation Maldita.es, focused on the platform during a 35‑day monitoring period in September and October.\n\nThe foundation said it identified more than 1,000 videos depicting child sexual abuse, which together had been viewed around 48 million times. In the same period it detected over 20,000 profiles it classified as belonging to suspected paedophiles, including roughly 7,000 accounts based in Spain. The organization compiled a list of about 26,000 accounts it believed were involved in illicit activity and forwarded the information to law‑enforcement agencies.\n\nMaldita.es examined user profiles, comments and live broadcasts, creating its own accounts to test how the recommendation system responded. Within three days, the algorithm suggested 19 livestreams featuring minors, with 15 of those appearing in a single morning, all streamed from school settings. The report highlighted how the platform’s recommendation engine can surface content that puts children at risk.\n\nOne documented case involved a livestream by a 10‑year‑old girl in Spain. During the broadcast, an adult male left suggestive remarks, illustrating how minors can be directly exposed to sexualized attention while using the service. The foundation said such interactions are facilitated by TikTok’s gift system, where viewers can send virtual items that cost real money, and the platform retains a portion of those payments.\n\n“Abuse is not hidden away in a little corner and it is not hard to find,” said Clara Jimenez Cruz, co‑founder and chief executive of Maldita.es. She argued that the platform’s design amplifies harmful content rather than containing it.\n\nThe Spanish Ministry of Youth and Children has formally requested explanations from TikTok’s parent company, ByteDance, and indicated that a suspension of the service is under consideration. In a post on the social network X, the ministry said it had asked prosecutors to act on the alleged abuse cases and that Minister Sira Rego had called for an urgent meeting with TikTok representatives in Spain.\n\nThe investigation broke down the offending accounts into several categories. It identified 231 profiles that posted 1,183 explicit items, 780 accounts that appeared to be used to attract buyers, and more than 10,000 accounts that solicited sexual images in comment sections. When all categories were combined, the foundation reported a total of roughly 26,000 suspect accounts.\n\n“Material you would expect to find only on the dark web is on TikTok,” the report stated, underscoring concerns that the platform’s safeguards are insufficient to prevent the spread of illegal content.\n\nAccording to the foundation, TikTok removed only about one‑tenth of the material it flagged and blocked roughly a quarter of the illegal posts identified in Spain. The company has faced a series of lawsuits and investigations worldwide over allegations that it fails to protect minors, claims it continues to deny.\n\nThe European Union has also warned TikTok that its personalized “For You” feed must be altered to eliminate harmful design features, or the platform could face substantial fines under the bloc’s digital content regulations. This pressure adds to the scrutiny the service is experiencing across multiple jurisdictions.\n\nBackground: TikTok’s recommendation engine, often referred to as the “For You” feed, uses a combination of user interactions, video attributes and device information to surface content that is likely to keep users engaged. The system continuously updates its suggestions based on real‑time behavior, meaning that once a type of content gains traction, it can be rapidly amplified to a wider audience.\n\nBackground: Online platforms that host user‑generated video and livestream content are required in many jurisdictions to monitor and remove material that depicts sexual exploitation of children. Failure to do so can result in legal liability for the platform and may trigger regulatory actions aimed at protecting vulnerable users.\n\nThe Spanish government’s next steps will depend on the outcome of discussions with TikTok and any further evidence presented by law‑enforcement agencies. The situation highlights the growing challenge of policing large‑scale social media services for illegal content while balancing the platform’s role in digital communication.",
-      "author": "MeridianMatters Newsroom",
-      "date": "2026-11-10",
-      "image": "https://upload.wikimedia.org/wikipedia/commons/9/97/Tiktok_Viral_Feta_pasta.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
-      "imageAlt": "Tiktok Viral Feta pasta",
-      "imageCredit": "Photo: Gabbybratcher / Wikimedia Commons (CC BY-SA 4.0)",
-      "images": [],
-      "tags": [
-        "news"
-      ],
-      "featured": true,
-      "status": "published",
-      "sourceName": "Al Jazeera",
-      "sourceUrl": "https://www.aljazeera.com/news/2026/11/10/spanish-probe-finds-over-20000-suspected-paedophile-profiles-on-tiktok?traffic_source=rss",
-      "sourceTitle": "Spain mulls TikTok suspension after investigation into child sex abuse videos",
-      "aiAssisted": true,
-      "editorChecked": true,
-      "wordCount": 686
     }
   ],
-  "lastUpdated": "2026-11-27T16:18:19.731Z"
+  "lastUpdated": "2026-11-28T01:14:40.594Z"
 }
