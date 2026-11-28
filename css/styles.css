@@ -971,3 +971,8 @@ ul, ol { list-style: none; }
 
 /* Stop the page from being dragged sideways */
 html, body { overflow-x: clip; }
+
+/* Leave room under the footer for the back-to-top button */
+@media (max-width: 768px) {
+  .site-footer { padding-bottom: 5.5rem; }
+}
