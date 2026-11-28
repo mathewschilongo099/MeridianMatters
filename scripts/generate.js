@@ -11,8 +11,10 @@
  *    source's wording. Drafts that fail are retried, then dropped.
  *  - Images: only a free-licence Wikimedia Commons photo whose file title or
  *    description names the same person/place/organisation as the story.
- *    No match = no photo (the site shows a neutral placeholder). The old
+ *    No match = no photo (the site shows neutral category artwork). The old
  *    random keyword stock-photo search is gone; it produced wrong photos.
+ *  - Existing photos that would not pass today's matching rules are cleared
+ *    at the start of every run (see clearMismatchedImages).
  *  - Duplicate stories, live blogs, video pages, odds/betting and opinion
  *    pieces are skipped.
  */
@@ -363,6 +365,7 @@ function stripHtml(s) {
 // Checked as whole words, and "map" also catches compounds like "Warmap".
 const IMG_BLOCK = /\b\w*maps?\b|\b(logo|flag|diagram|poster|screenshot|cartoon|caricature|chart|stamp|coat of arms|satellite|orthographic|plaque|memorial|aerial|panorama|panoramio|vintage|painting|drawing|illustration)\b/i;
 const IMG_FILLER = new Set(['and','the','of','at','in','on','with','for','from','jpg','jpeg','png','file','photo','image']);
+const FILE_PHOTO_PREFIX = 'File photo.';
 
 function nameTokens(s) {
   return loose(s).split(' ').filter(t =>
@@ -418,7 +421,7 @@ async function findImage(entities) {
         return {
           url: info.thumburl || info.url,
           alt: `File photo: ${(stripHtml(meta.ObjectName?.value) || fileTitle).slice(0, 130)}`,
-          credit: 'File photo. ' + (artist
+          credit: FILE_PHOTO_PREFIX + ' ' + (artist
             ? `Photo: ${artist.slice(0, 80)} / Wikimedia Commons (${license})`
             : `Wikimedia Commons (${license})`)
         };
@@ -428,6 +431,43 @@ async function findImage(entities) {
     }
   }
   return null;
+}
+
+// ---------- clean up photos that were published before the stricter matching ----------
+
+// Wikimedia image URLs contain the file name; recover it so it can be judged again.
+function fileTitleFromUrl(u) {
+  let parts;
+  try { parts = new URL(u).pathname.split('/').filter(Boolean); } catch { return ''; }
+  const ti = parts.indexOf('thumb');
+  let name = ti >= 0 ? parts[ti + 3] : parts[parts.length - 1];
+  try { name = decodeURIComponent(name || ''); } catch { name = name || ''; }
+  return name.replace(/\.\w+$/, '').replace(/_/g, ' ');
+}
+
+// Blank any stored Wikimedia photo that would not pass today's rules. The site then shows
+// its neutral category artwork for that story. Photos chosen by the current matcher (their
+// credit starts with "File photo.") and non-Wikimedia images (e.g. added by hand) are left alone.
+function clearMismatchedImages(data) {
+  let cleared = 0;
+  for (const a of data.articles || []) {
+    if (!a.image) continue;
+    if (!/wikimedia\.org/i.test(a.image)) continue;
+    if ((a.imageCredit || '').startsWith(FILE_PHOTO_PREFIX)) continue;
+
+    const fileTitle = fileTitleFromUrl(a.image);
+    const entities = [...new Set([...extractEntities(a.sourceTitle || ''), ...extractEntities(a.title || '')])];
+    const ok = !IMG_BLOCK.test(`${fileTitle} ${a.imageAlt || ''}`) &&
+               entities.some(e => photoMatchesEntity(e, fileTitle, ''));
+    if (ok) continue;
+
+    console.log(`  Cleared photo for "${a.title}" (was: ${fileTitle})`);
+    a.image = '';
+    a.imageAlt = '';
+    a.imageCredit = '';
+    cleared++;
+  }
+  return cleared;
 }
 
 // ---------- storage ----------
@@ -454,6 +494,13 @@ async function main() {
   console.log('Time:', new Date().toISOString());
 
   const data = loadArticles();
+
+  const clearedCount = clearMismatchedImages(data);
+  if (clearedCount) {
+    console.log(`Cleared ${clearedCount} mismatched photo(s) from existing articles`);
+    saveArticles(data);
+  }
+
   const usedUrls = new Set((data.articles || []).map(a => a.sourceUrl).filter(Boolean));
   const existingTitles = (data.articles || []).flatMap(a => [a.title, a.sourceTitle]).filter(Boolean);
   const added = [];
