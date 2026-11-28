@@ -359,30 +359,68 @@ function stripHtml(s) {
   return decodeEntities((s || '').replace(/<[^>]*>/g, ' ')).replace(/\s+/g, ' ').trim();
 }
 
+// Photos that are never acceptable: maps, logos, plaques, satellite views, vintage items, etc.
+// Checked as whole words, and "map" also catches compounds like "Warmap".
+const IMG_BLOCK = /\b\w*maps?\b|\b(logo|flag|diagram|poster|screenshot|cartoon|caricature|chart|stamp|coat of arms|satellite|orthographic|plaque|memorial|aerial|panorama|panoramio|vintage|painting|drawing|illustration)\b/i;
+const IMG_FILLER = new Set(['and','the','of','at','in','on','with','for','from','jpg','jpeg','png','file','photo','image']);
+
+function nameTokens(s) {
+  return loose(s).split(' ').filter(t =>
+    t.length > 1 && !/^\d+(st|nd|rd|th)?$/.test(t) && !IMG_FILLER.has(t) && !MONTHS_DAYS.has(t));
+}
+
+// A photo is accepted only if it is genuinely ABOUT the entity, not just mentioning its words.
+function photoMatchesEntity(entity, fileTitle, categories) {
+  const ent = loose(entity);
+  const entToks = nameTokens(entity);
+  if (!entToks.length) return false;
+
+  // 1. Strongest signal: the file is filed under a Commons category named exactly for the entity
+  const cats = (categories || '').split('|').map(c => loose(c));
+  if (cats.includes(ent)) return true;
+
+  // 2. Otherwise: a multi-word name, as a phrase in the FILE TITLE,
+  //    and the name must be a real share of that title
+  if (entToks.length < 2) return false;
+  const titleToks = nameTokens(fileTitle);
+  const hay = ' ' + titleToks.join(' ') + ' ';
+  if (!hay.includes(' ' + entToks.join(' ') + ' ')) return false;
+  return entToks.length / titleToks.length >= 0.3;
+}
+
 async function findImage(entities) {
   for (const entity of entities) {
     try {
       const q = encodeURIComponent(`"${entity}" filetype:bitmap`);
-      const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${q}&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=url|extmetadata|size|mime&iiurlwidth=1000&format=json&formatversion=2&origin=*`;
+      const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${q}&gsrnamespace=6&gsrlimit=20&prop=imageinfo&iiprop=url|extmetadata|size|mime&iiurlwidth=1000&format=json&formatversion=2&origin=*`;
       const data = await fetchJSON(url, { headers: { 'User-Agent': UA } });
       const pages = data?.query?.pages || [];
-      const tokens = entity.toLowerCase().split(/\s+/).filter(t => t.length >= 3);
       for (const page of pages) {
         const info = page.imageinfo?.[0];
         if (!info) continue;
         if (!(info.mime === 'image/jpeg' || info.mime === 'image/png')) continue;
         if ((info.width || 0) < 800 || (info.height || 0) < 450 || info.width < info.height * 1.2) continue;
+
         const meta = info.extmetadata || {};
-        const title = page.title.replace(/^File:/, '').replace(/\.\w+$/, '').replace(/_/g, ' ');
-        const hay = `${title} ${stripHtml(meta.ObjectName?.value)} ${stripHtml(meta.ImageDescription?.value)} ${stripHtml(meta.Categories?.value)}`.toLowerCase();
-        if (!tokens.every(t => hay.includes(t))) continue;
-        if (/\b(logo|map|flag|diagram|poster|screenshot|cartoon|caricature|chart|stamp|coat of arms)\b/.test(hay)) continue;
+        const fileTitle = page.title.replace(/^File:/, '').replace(/\.\w+$/, '').replace(/_/g, ' ');
+        const categories = stripHtml(meta.Categories?.value);
+        const description = stripHtml(meta.ImageDescription?.value);
+
+        if (IMG_BLOCK.test(`${fileTitle} ${description} ${categories}`)) continue;
+
+        // Licence must be open and reusable (no NonCommercial / NoDerivs)
+        const license = stripHtml(meta.LicenseShortName?.value);
+        if (!/^(CC|Public domain|PD)/i.test(license) || /\b(NC|ND)\b/i.test(license)) continue;
+
+        if (!photoMatchesEntity(entity, fileTitle, categories)) continue;
+
         const artist = stripHtml(meta.Artist?.value);
-        const license = stripHtml(meta.LicenseShortName?.value) || 'Wikimedia Commons';
         return {
           url: info.thumburl || info.url,
-          alt: (stripHtml(meta.ObjectName?.value) || title).slice(0, 140),
-          credit: artist ? `Photo: ${artist.slice(0, 80)} / Wikimedia Commons (${license})` : `Wikimedia Commons (${license})`
+          alt: `File photo: ${(stripHtml(meta.ObjectName?.value) || fileTitle).slice(0, 130)}`,
+          credit: 'File photo. ' + (artist
+            ? `Photo: ${artist.slice(0, 80)} / Wikimedia Commons (${license})`
+            : `Wikimedia Commons (${license})`)
         };
       }
     } catch (err) {
