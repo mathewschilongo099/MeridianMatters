@@ -250,14 +250,16 @@
     }
 
     if (rail) {
+      // Each top story gets a thumbnail (its photo, or the neutral category artwork).
       rail.innerHTML = railItems.length
         ? railItems.map((a) => `
-          <a class="rail-item" href="article.html?id=${encodeURIComponent(a.id)}">
+          <a class="rail-item" href="article.html?id=${encodeURIComponent(a.id)}" style="grid-template-columns:1.9rem 1fr 92px;align-items:start">
             <div>
               <span class="article-category">${esc(categoryMap[a.category] || a.category)}</span>
               <h3>${esc(a.title)}</h3>
               <div class="article-meta">${metaLine(a)}</div>
             </div>
+            <img src="${esc(a.image || fallbackImage(a.category))}" alt="" loading="lazy" decoding="async" style="width:92px;height:68px;object-fit:cover;border-radius:3px;background:var(--bg-alt)">
           </a>`).join('')
         : '<p class="empty-state">More stories coming soon.</p>';
     }
